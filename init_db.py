@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
-client = MongoClient('mongodb+srv://sparta:<password>@cluster0.sfuhxqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+client = MongoClient('mongodb+srv://sparta:jungle@cluster0.sfuhxqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.dbjungle
 
     
