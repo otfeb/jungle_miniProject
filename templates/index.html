@@ -5,12 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Hello Bulma!</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
       .wrap {
         width: 1200px;
         margin: auto;
       }
     </style>
+    <script>
+      function singUp(){
+        $(".modal").attr("class", "modal is-active");
+      }
+
+      function closeModal(){
+        $(".modal").attr("class", "modal");
+      }
+
+    </script>
   </head>
   <body>
     <div class="wrap">
@@ -47,7 +58,7 @@
         <div class="navbar-end">
           <div class="navbar-item">
             <div class="buttons">
-              <a class="button is-primary"><strong>Sign up</strong></a>
+              <a class="button is-primary" onclick="singUp()"><strong>Sign up</strong></a>
               <a class="button is-light">Log in</a>
             </div>
           </div>
@@ -130,5 +141,47 @@
         </p>
       </div>
     </footer>
+
+    <div class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <form action="/signUp" method="post">
+        <header class="modal-card-head">
+          <p class="modal-card-title">회원가입</p>
+          <button type="button" class="delete" aria-label="close" onclick="closeModal()"></button>
+        </header>
+        <section class="modal-card-body">
+  
+          <div class="field">
+            <label class="label">ID</label>
+            <div class="control">
+              <input class="input" type="text" name="user_id" placeholder="아이디를 입력해주세요">
+            </div>
+            <p class="help"></p>
+          </div>
+  
+          <div class="field">
+            <label class="label">PW</label>
+            <div class="control">
+              <input class="input" type="text" name="user_pw" placeholder="비밀번호를 입력해주세요">
+            </div>
+          </div>
+  
+          <div class="field">
+            <label class="label">name</label>
+            <div class="control">
+              <input class="input" type="text" name="user_name" placeholder="이름을 입력해주세요">
+            </div>
+          </div>
+  
+        </section>
+        <footer class="modal-card-foot">
+          <button type="submit" class="button is-success">회원가입</button>
+          <button type="button" class="button" onclick="closeModal()">Cancel</button>
+        </footer>
+      </form>
+      </div>
+    </div>  
+
   </body>
 </html>
