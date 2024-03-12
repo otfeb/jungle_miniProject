@@ -10,8 +10,12 @@ db = client.dbjungle
 
 app = Flask(__name__)
 
+SECRET_KEY = 'JUNGLE'
+
 @app.route('/', methods=['GET'])
 def index():
+    token_receive = request.cookies.get('mytoken')
+
     page = int(request.args.get('page', 1))
     print(page)
     limit = 6
@@ -20,7 +24,16 @@ def index():
     tot_count = list(db.posts.find({},{'_id':False}))
     last_page_num = math.ceil(len(tot_count) / limit)
     print(posts)
-    return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num)
+
+    if token_receive is not None:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({'id':payload['id']})
+        return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
+    else:
+        return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num)
+
+    
+    
 
 @app.route('/signUp', methods=['POST'])
 def signUp():
