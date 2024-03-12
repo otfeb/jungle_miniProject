@@ -20,7 +20,9 @@ def index():
     print(page)
     limit = 6
     offset = (page - 1) * limit
-    posts = list(db.posts.find({},{'_id':False}).skip(offset).limit(limit))
+    posts = list(db.posts.find({}).skip(offset).limit(limit))
+    for idx in range(len(posts)):
+        posts[idx]['_id'] = str(posts[idx]['_id'])
     tot_count = list(db.posts.find({},{'_id':False}))
     last_page_num = math.ceil(len(tot_count) / limit)
     print(posts)
@@ -79,6 +81,13 @@ def login():
         return jsonify({'result':'success', 'token':token})
     else:
         return jsonify({'result':'fail', 'msg':'아이디/비밀번호가 일치하지 않습니다.'})
+    
+@app.route('/detail', methods=['GET'])
+def getDetail():
+    title = request.args.get('title')
+    content = request.args.get('content')
 
+    return jsonify({'title': title, 'content': content})
+    return 'okay'
 if __name__ == '__main__':
-    app.run('0.0.0.0',port=5000,debug=True)
+    app.run('0.0.0.0',port=5020,debug=True)
