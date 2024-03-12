@@ -52,6 +52,7 @@ def signUp():
     db.users.insert_one(info)
     return redirect(url_for('index'))
 
+
 @app.route('/idCheck', methods=['POST'])
 def idCheck():
    userId = request.form['userId']
@@ -63,7 +64,8 @@ def idCheck():
       return '0'
    else:
       return '1'
-   
+
+
 @app.route('/login', methods=['POST'])
 def login():
     id = request.form['id']
@@ -84,6 +86,15 @@ def login():
     else:
         return jsonify({'result':'fail', 'msg':'아이디/비밀번호가 일치하지 않습니다.'})
 
+
+@app.route('/post', methods=['GET'])
+def post():
+    return render_template("post.html")
+
+
+@app.route('/create', methods=['GET'])
+def create():
+    return render_template("create.html")
 
 
 if __name__ == '__main__':
