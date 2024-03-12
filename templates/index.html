@@ -1,208 +1,61 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hello Bulma!</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <style>
-      .wrap {
-        width: 1200px;
-        margin: auto;
-      }
-      #userId {
-        width: 495px;
-      }
-    </style>
-    <script>
-      function singUp() {
-        $('.modal').attr('class', 'modal is-active')
-      }
-      
-      function closeModal() {
-        $('.modal').attr('class', 'modal')
-      }
-      function check(){
-          if($("#chkSign").html() == "&nbsp;사용가능한 아이디 입니다"){
-              alert('회원가입에 성공하였습니다!');
-              return true
-          }
-          else{
-              alert("중복체크를 확인해주세요 !");
-              return false
-          }
-      }
-      function idCheck(){
-          userId = $("#userId").val();
+{% extends 'base.html' %}
 
-          if(userId == ""){
-              alert("id를 입력해주세요.");
-              $("#userId").focus();
-              return;
-          }
-          $.ajax({
-              type: 'post',
-              url: '/idCheck',
-              data: {'userId':userId},
-              success:function(res){
-                  if(res == '1'){
-                      $("#chkSign").html("&nbsp;사용가능한 아이디 입니다");
-                      $("#chkSign").css("color","green");
-                  }
-                  else{
-                      $("#chkSign").html("&nbsp;이미 같은 아이디가 있습니다");
-                      $("#chkSign").css("color","red");
-                  }
-              }
-          });
-      }
-    </script>
-  </head>
-  <body>
-    <div class="wrap">
-      <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="https://bulma.io"><img src="https://bulma.io/images/bulma-logo.png" width="112" height="28" /></a>
 
-          <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
+{% block style %}
+#userId {
+  width: 495px;
+}
+#post {
+  height: 250px;
+}
 
-        <div id="navbarBasicExample" class="navbar-menu">
-          <div class="navbar-start">
-            <a class="navbar-item">Home</a>
+{% endblock %}
 
-            <a class="navbar-item">Documentation</a>
-
-            <div class="navbar-item has-dropdown is-hoverable">
-              <a class="navbar-link">More</a>
-
-              <div class="navbar-dropdown">
-                <a class="navbar-item">About</a>
-                <a class="navbar-item">Jobs</a>
-                <a class="navbar-item">Contact</a>
-                <hr class="navbar-divider" />
-                <a class="navbar-item">Report an issue</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="navbar-end">
-            <div class="navbar-item">
-              <div class="buttons">
-                <a class="button is-primary" onclick="singUp()"><strong>Sign up</strong></a>
-                <a class="button is-light">Log in</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
-      <section class="section">
-        <div class="container">
-          <h1 class="title">Hello World</h1>
-          <p class="subtitle">
-            My first website with <strong>Bulma</strong>!
-          </p>
-        </div>
-      </section>
-      <div class="tile is-ancestor">
-          {% for _, idx in zip(posts, [0,1,2]) %}
-          <div class="tile is-vertical is-4">
-            <div class="tile is-parent">
-              <article class="tile is-child box">
-                <p class="title">{{ posts[idx].title }}</p>
-                <p class="subtitle">{{ posts[idx].content }}</p>
-              </article>
-            </div>
-          </div>
-          {% endfor %}
-      </div>
-
-      <div class="tile is-ancestor">
-        {% for idx in range(3, posts|length) %}
-          <div class="tile is-parent">
-            <article class="tile is-child box">
-              <p class="title">{{ posts[idx].title }}</p>
-              <p class="subtitle">{{ posts[idx].content }}</p>
-            </article>
-          </div>
-        {% endfor %}
-      </div>
-
-      <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <a class="pagination-previous">Previous</a>
-        <a class="pagination-next">Next page</a>
-        <ul class="pagination-list">
-          {% set page = page|int %}
-          {% if page != 1 %}
-            <li>
-              <a class="pagination-link" href="?page={{ page - 1 }}">{{ page - 1 }}</a>
-            </li>
-          {% endif %}
-          <li>
-            <a class="pagination-link is-current" aria-label="Page 46" aria-current="page">{{ page }}</a>
-          </li>
-          {% set last = last|int %}
-          {% if page != last %}
-            <li>
-              <a class="pagination-link" href="?page={{ page + 1 }}">{{ page + 1 }}</a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
+{% block content %}
+<div class="tile is-ancestor">
+  {% for _, idx in zip(posts, [0,1,2]) %}
+  <div class="tile is-vertical is-4" id="post">
+    <div class="tile is-parent">
+      <article class="tile is-child box">
+        <p class="title">{{ posts[idx].title }}</p>
+        <p class="subtitle">{{ posts[idx].content }}</p>
+      </article>
     </div>
-    <footer class="footer">
-      <div class="content has-text-centered">
-        <p>
-          <strong>Bulma</strong> by <a href="https://jgthms.com">Jeremy Thomas</a>. The source code is licensed
-          <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
-        </p>
-      </div>
-    </footer>
+  </div>
+  {% endfor %}
+</div>
 
-    <div class="modal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <form action="/signUp" method="post" onsubmit="return check()">
-        <header class="modal-card-head">
-          <p class="modal-card-title">회원가입</p>
-          <button type="button" class="delete" aria-label="close" onclick="closeModal()"></button>
-        </header>
-        <section class="modal-card-body">
-  
-          <div class="field">
-            <label class="label">ID</label>
-            <div class="control">
-              <input class="input" type="text" name="user_id" id="userId" placeholder="아이디를 입력해주세요">
-              <button type="button" class="button is-light" onclick=idCheck()>중복체크</button>
-            </div>
-            <p class="help" id="chkSign"></p>
-          </div>
-  
-          <div class="field">
-            <label class="label">PW</label>
-            <div class="control">
-              <input class="input" type="text" name="user_pw" placeholder="비밀번호를 입력해주세요">
-            </div>
-          </div>
-  
-          <div class="field">
-            <label class="label">name</label>
-            <div class="control">
-              <input class="input" type="text" name="user_name" placeholder="이름을 입력해주세요">
-            </div>
-          </section>
-          <footer class="modal-card-foot">
-            <button type="submit" class="button is-success">회원가입</button>
-            <button type="button" class="button" onclick="closeModal()">Cancel</button>
-          </footer>
-        </form>
-      </div>
-    </div>
-  </body>
-</html>
+<div class="tile is-ancestor">
+{% for idx in range(3, posts|length) %}
+  <div class="tile is-parent" id="post">
+    <article class="tile is-child box">
+      <p class="title">{{ posts[idx].title }}</p>
+      <p class="subtitle">{{ posts[idx].content }}</p>
+    </article>
+  </div>
+{% endfor %}
+</div>
+
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+<a class="pagination-previous">Previous</a>
+<a class="pagination-next">Next page</a>
+<ul class="pagination-list">
+  {% set page = page|int %}
+  {% if page != 1 %}
+    <li>
+      <a class="pagination-link" href="?page={{ page - 1 }}">{{ page - 1 }}</a>
+    </li>
+  {% endif %}
+  <li>
+    <a class="pagination-link is-current" aria-label="Page 46" aria-current="page">{{ page }}</a>
+  </li>
+  {% set last = last|int %}
+  {% if page != last %}
+    <li>
+      <a class="pagination-link" href="?page={{ page + 1 }}">{{ page + 1 }}</a>
+    </li>
+  {% endif %}
+</ul>
+</nav>
+{% endblock %}
+
