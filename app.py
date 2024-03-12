@@ -60,6 +60,10 @@ def idCheck():
    else:
       return '1'
    
+@app.route('/post', methods=['GET'])
+def post():
+    return render_template("post.html")
+
 @app.route('/login', methods=['POST'])
 def login():
     id = request.form['id']
