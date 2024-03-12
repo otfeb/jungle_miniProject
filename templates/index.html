@@ -17,12 +17,21 @@
     </style>
     <script>
       function singUp(){
-        $(".modal").attr("class", "modal is-active");
+        $("#signUp_modal").attr("class", "modal is-active");
       }
 
-      function closeModal(){
-        $(".modal").attr("class", "modal");
+      function close_signUp(){
+        $("#signUp_modal").attr("class", "modal");
       }
+
+      function login(){
+        $("#login_modal").attr("class", "modal is-active");
+      }
+
+      function close_login(){
+        $("#login_modal").attr("class", "modal");
+      }
+
       function check(){
           if($("#chkSign").html() == "&nbsp;사용가능한 아이디 입니다"){
               alert('회원가입에 성공하였습니다!');
@@ -57,6 +66,21 @@
               }
           });
       }
+
+      function login_check(){
+        var id = $("#user_login_id").val();
+        var pw = $("#user_login_pw").val();
+
+        $.ajax({
+          type: 'post',
+          url: '/login',
+          data: {'id':id, 'pw':pw},
+          success: function(res){
+            
+          }
+        });
+      }
+
     </script>
   </head>
   <body>
@@ -94,8 +118,8 @@
         <div class="navbar-end">
           <div class="navbar-item">
             <div class="buttons">
-              <a class="button is-primary" onclick="singUp()"><strong>Sign up</strong></a>
-              <a class="button is-light">Log in</a>
+              <a class="button is-primary" onclick="login()">Log in</a>
+              <a class="button is-light" onclick="singUp()"><strong>Sign up</strong></a>
             </div>
           </div>
         </div>
@@ -178,13 +202,13 @@
       </div>
     </footer>
 
-    <div class="modal">
+    <div class="modal" id="signUp_modal">
       <div class="modal-background"></div>
       <div class="modal-card">
         <form action="/signUp" method="post" onsubmit="return check()">
         <header class="modal-card-head">
           <p class="modal-card-title">회원가입</p>
-          <button type="button" class="delete" aria-label="close" onclick="closeModal()"></button>
+          <button type="button" class="delete" aria-label="close" onclick="close_signUp()"></button>
         </header>
         <section class="modal-card-body">
   
@@ -213,12 +237,43 @@
   
         </section>
         <footer class="modal-card-foot">
-          <button type="submit" class="button is-success">회원가입</button>
-          <button type="button" class="button" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="button is-success">Sign up</button>
+          <button type="button" class="button" onclick="close_signUp()">Cancel</button>
         </footer>
       </form>
       </div>
-    </div>  
+    </div>
+
+    <div class="modal" id="login_modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">로그인</p>
+          <button class="delete" aria-label="close" onclick="close_login()"></button>
+        </header>
+        <section class="modal-card-body">
+
+          <div class="field">
+            <label class="label">ID</label>
+            <div class="control">
+              <input class="input" type="text" id="user_login_id" placeholder="아이디를 입력해주세요">
+            </div>
+          </div>
+  
+          <div class="field">
+            <label class="label">PW</label>
+            <div class="control">
+              <input class="input" type="text" id="user_login_pw" placeholder="비밀번호를 입력해주세요">
+            </div>
+          </div>
+
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" onclick="login_check()">Login</button>
+          <button class="button" onclick="close_login()">Cancel</button>
+        </footer>
+      </div>
+    </div>
 
   </body>
 </html>
