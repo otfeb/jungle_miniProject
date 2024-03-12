@@ -30,5 +30,17 @@ def signUp():
     db.users.insert_one(info)
     return redirect(url_for('index'))
 
+@app.route('/idCheck', methods=['POST'])
+def idCheck():
+   userId = request.form['userId']
+   all_id = list(db.users.find({}, {'id':1, '_id':False}))
+
+   all_id_values = [item['id'] for item in all_id]
+
+   if userId in all_id_values:
+      return '0'
+   else:
+      return '1'
+
 if __name__ == '__main__':
     app.run('0.0.0.0',port=5000,debug=True)
