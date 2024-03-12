@@ -6,7 +6,7 @@
     <title>Hello Bulma!</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <style>
       .wrap {
         width: 1200px;
@@ -17,13 +17,27 @@
       }
     </style>
     <script>
-      function singUp() {
-        $('.modal').attr('class', 'modal is-active')
+      function singUp(){
+        $("#signUp_modal").attr("class", "modal is-active");
       }
-      
-      function closeModal() {
-        $('.modal').attr('class', 'modal')
+
+      function close_signUp(){
+        $("#userId").val("");
+        $("#userPw").val("");
+        $("#userName").val("");
+        $("#signUp_modal").attr("class", "modal");
       }
+
+      function login(){
+        $("#login_modal").attr("class", "modal is-active");
+      }
+
+      function close_login(){
+        $("#user_login_id").val("");
+        $("#user_login_pw").val("");
+        $("#login_modal").attr("class", "modal");
+      }
+
       function check(){
           if($("#chkSign").html() == "&nbsp;사용가능한 아이디 입니다"){
               alert('회원가입에 성공하였습니다!');
@@ -58,6 +72,34 @@
               }
           });
       }
+
+      function login_check(){
+        var id = $("#user_login_id").val();
+        var pw = $("#user_login_pw").val();
+
+        $.ajax({
+          type: 'post',
+          url: '/login',
+          data: {'id':id, 'pw':pw},
+          success: function(res){
+            if(res['result'] == 'success'){
+              $.cookie('mytoken', res['token']);
+              alert('로그인 완료!');
+              location.href = '/'
+            }
+            else{
+              alert(res['msg']);
+            }
+          }
+        });
+      }
+
+      function logout(){
+        $.removeCookie('mytoken');
+        alert('로그아웃 되었습니다.');
+        location.href = '/'
+      }
+
     </script>
   </head>
   <body>
@@ -95,8 +137,13 @@
           <div class="navbar-end">
             <div class="navbar-item">
               <div class="buttons">
-                <a class="button is-primary" onclick="singUp()"><strong>Sign up</strong></a>
-                <a class="button is-light">Log in</a>
+                {% if id == null %}
+                  <a class="button is-primary" onclick="login()"><strong>Log in</strong></a>
+                  <a class="button is-light" onclick="singUp()">Sign up</a>
+                {% else %}
+                  <a class="button is-white"><strong><b>{{ id }}님</b></strong></a>
+                  <a class="button is-danger is-light" onclick="logout()"><strong>Log out</strong></a>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -165,13 +212,13 @@
       </div>
     </footer>
 
-    <div class="modal">
+    <div class="modal" id="signUp_modal">
       <div class="modal-background"></div>
       <div class="modal-card">
         <form action="/signUp" method="post" onsubmit="return check()">
         <header class="modal-card-head">
-          <p class="modal-card-title">회원가입</p>
-          <button type="button" class="delete" aria-label="close" onclick="closeModal()"></button>
+          <p class="modal-card-title"><b>회원가입</b></p>
+          <button type="button" class="delete" aria-label="close" onclick="close_signUp()"></button>
         </header>
         <section class="modal-card-body">
   
@@ -187,22 +234,56 @@
           <div class="field">
             <label class="label">PW</label>
             <div class="control">
-              <input class="input" type="text" name="user_pw" placeholder="비밀번호를 입력해주세요">
+              <input class="input" type="text" name="user_pw" id="userPw" placeholder="비밀번호를 입력해주세요">
             </div>
           </div>
   
           <div class="field">
-            <label class="label">name</label>
+            <label class="label">NAME</label>
             <div class="control">
-              <input class="input" type="text" name="user_name" placeholder="이름을 입력해주세요">
+              <input class="input" type="text" name="user_name" id="userName" placeholder="이름을 입력해주세요">
             </div>
-          </section>
-          <footer class="modal-card-foot">
-            <button type="submit" class="button is-success">회원가입</button>
-            <button type="button" class="button" onclick="closeModal()">Cancel</button>
-          </footer>
-        </form>
+          </div>
+  
+        </section>
+        <footer class="modal-card-foot">
+          <button type="submit" class="button is-success">Sign up</button>
+          <button type="button" class="button" onclick="close_signUp()">Cancel</button>
+        </footer>
+      </form>
       </div>
     </div>
+
+    <div class="modal" id="login_modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title"><b>로그인</b></p>
+          <button class="delete" aria-label="close" onclick="close_login()"></button>
+        </header>
+        <section class="modal-card-body">
+
+          <div class="field">
+            <label class="label">ID</label>
+            <div class="control">
+              <input class="input" type="text" id="user_login_id" placeholder="아이디를 입력해주세요">
+            </div>
+          </div>
+  
+          <div class="field">
+            <label class="label">PW</label>
+            <div class="control">
+              <input class="input" type="text" id="user_login_pw" placeholder="비밀번호를 입력해주세요">
+            </div>
+          </div>
+
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" onclick="login_check()">Login</button>
+          <button class="button" onclick="close_login()">Cancel</button>
+        </footer>
+      </div>
+    </div>
+
   </body>
 </html>
