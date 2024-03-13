@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
+
 {% block style %}
+#userId {
+  width: 495px;
+}
 #post {
   height: 250px;
 }
@@ -9,28 +13,17 @@
   padding: 10px 10px;
   /* 살짝 패딩을 추가합니다. */
   transform: translateY(-110%);
-  position: absolute;
-  right: 1%;
 }
-#btn-container {
-  margin-bottom: 10px;
-  display: flex;
-}  
-
 {% endblock %}
-
-
 
 {% block content %}
 {% if id != null %}
-<div class="container" id="btn-container">
-    <button align="right" class="button is-success place" onclick="location.href='/create'">글쓰기</button>
-</div>
+<button class="button is-success place" onclick="location.href='/create'">글쓰기</button>
 {% endif %}
 <div class="tile is-ancestor">
   {% for _, idx in zip(posts, [0,1,2]) %}
   <div class="tile is-vertical is-4" id="post">
-    <div class="tile is-parent" onclick="location.href='/post?pid={{ posts[idx]._id}}'">
+    <div class="tile is-parent">
       <article class="tile is-child box">
         <p class="title">{{ posts[idx].title }}</p>
         <p class="subtitle">{{ posts[idx].content }}</p>
@@ -42,20 +35,18 @@
 
 <div class="tile is-ancestor">
 {% for idx in range(3, posts|length) %}
-<div class="tile is-vertical is-4" id="post">
-  <div class="tile is-parent" id="post" onclick="location.href='/post?pid={{ posts[idx]._id}}'">
+  <div class="tile is-parent" id="post">
     <article class="tile is-child box">
       <p class="title">{{ posts[idx].title }}</p>
       <p class="subtitle">{{ posts[idx].content }}</p>
     </article>
   </div>
-</div>
 {% endfor %}
 </div>
 
 <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-<a class="pagination-previous">Previous</a>
-<a class="pagination-next">Next page</a>
+<a class="pagination-previous" href="?page={{ page - 1 }}">Previous</a>
+<a class="pagination-next" href="?page={{ page + 1 }}">Next page</a>
 <ul class="pagination-list">
   {% set page = page|int %}
   {% if page != 1 %}
@@ -67,7 +58,7 @@
     <a class="pagination-link is-current" aria-label="Page 46" aria-current="page">{{ page }}</a>
   </li>
   {% set last = last|int %}
-  {% if page != last %}
+  {% if page == last %}
     <li>
       <a class="pagination-link" href="?page={{ page + 1 }}">{{ page + 1 }}</a>
     </li>

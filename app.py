@@ -20,15 +20,17 @@ def index():
     token_receive = request.cookies.get('mytoken')
 
     page = int(request.args.get('page', 1))
-    print(page)
     limit = 6
     offset = (page - 1) * limit
     posts = list(db.posts.find({}).skip(offset).limit(limit))
+    
     for post in posts:
         post['_id'] = str(post['_id'])
     tot_count = list(db.posts.find({},{'_id':False}))
     last_page_num = math.ceil(len(tot_count) / limit)
-    print(posts)
+    
+    if last_page_num == 0:
+        last_page_num = 1
     
     if token_receive is not None:
         try:
