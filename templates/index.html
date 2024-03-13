@@ -26,6 +26,14 @@
   margin-bottom: 1%
 }
 
+#title{
+  width: 350px; /* 원하는 너비로 설정하세요 */
+  max-height: 1.2em; /* 세 줄까지의 높이를 계산합니다 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 넘친 텍스트를 말줄임표(...)로 대체 */
+  white-space: nowrap; /* 줄 바꿈을 허용하여 말줄임표가 나오도록 설정합니다 */
+}
+
 #content {
   width: 350px; /* 원하는 너비로 설정하세요 */
   max-height: calc(1.2em * 3); /* 세 줄까지의 높이를 계산합니다 */
@@ -35,6 +43,7 @@
   -webkit-box-orient: vertical; /* 수직 방향으로 정렬 */
   text-overflow: ellipsis; /* 넘친 텍스트를 말줄임표(...)로 대체 */
   white-space: pre-line; /* 줄 바꿈을 허용하여 말줄임표가 나오도록 설정합니다 */
+  font-size: 12pt;
 }
 
 {% endblock %}
@@ -69,8 +78,9 @@
   <div class="tile is-vertical is-4" id="post" onclick="location.href='/post?pid={{posts[idx]._id}}'">
     <div class="tile is-parent">
       <article class="tile is-child box">
-        <p class="title">{{ posts[idx].title }}</p>
-        <p class="id">{{ posts[idx].id }}</p>
+        <p class="title" id="title">{{ posts[idx].title }}</p>
+        <p class="id"><b>작성자 : {{ posts[idx].id }}</b></p>
+        <hr>
         <p class="subtitle" id="content">{{ posts[idx].content }}</p>
       </article>
     </div>
