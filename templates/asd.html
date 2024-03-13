@@ -1,57 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   
-    <style>
-       #btn1{
-        width: 550px;
-        height: 90px;
-        top: 26%;
-        left: 29.5%;
-        border-radius: 40px;
-        position: absolute;
-
-       }
-       
-       #btn2{
-        width: 550px;
-        height: 90px;
-        top: 65%;
-        left: 33%;
-        border-radius: 40px;
-       }
-       #btn_group button{
-        background-color: #FF7785;
-        border: none;
-        color: white;
-        font-size: 45px;
-        font-weight: bolder;
-        font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-        position: absolute;
-        float:left
-        transition: 0.3s;
-
-    
-        }
-        #btn_group button:focus{
-        outline: 0;
-
-        }
-        #btn_group button:hover{
-        background-color: #FF0056;
-        } 
-        
-    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Toggle Like</title>
 </head>
 <body>
-    <div id="btn_group">
-        <a href="https://nemone.co.kr/member/login.html"><button id="btn1" button type="button">가입하고 쿠폰 받기 </button></a>
-        
-        <a href="https://nemone.co.kr/member/login.html"><button id="btn2" button type="button">첫 구매 쿠폰받기 </button></a>
-    </div>
+    <button id="likeButton" onclick="toggleLike()">Like</button>
+
+    <script>
+        function toggleLike() {
+            const itemId = 'your_item_id';  // 좋아요를 토글할 항목의 ID
+            const userId = 'your_user_id';  // 현재 사용자의 ID
+
+            fetch('/toggleLike', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ itemId, userId })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Like toggled successfully');
+                    // 좋아요 상태에 따라 버튼 텍스트 변경
+                    const button = document.getElementById('likeButton');
+                    if (button.innerText === 'Like') {
+                        button.innerText = 'Unlike';
+                    } else {
+                        button.innerText = 'Like';
+                    }
+                } else {
+                    console.error('Failed to toggle like');
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling like:', error);
+            });
+        }
+    </script>
 </body>
 </html>
