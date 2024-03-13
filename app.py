@@ -26,6 +26,8 @@ def index():
     offset = (page - 1) * limit
     posts = list(db.posts.find({}).sort({'date':-1}).skip(offset).limit(limit))
     
+    toptitle = get_best_post()
+
     for post in posts:
         post['_id'] = str(post['_id'])
     tot_count = list(db.posts.find({},{'_id':False}))
@@ -40,11 +42,11 @@ def index():
             user_info = db.users.find_one({'id':payload['id']})
             id = user_info['id']
             session["id"] = str(id)
-            return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
+            return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num, toptitle=toptitle)
         except jwt.ExpiredSignatureError:
-            return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num)
+            return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num, toptitle=toptitle)
     else:
-        return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num)
+        return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num, toptitle=toptitle)
     
 
 @app.route('/signUp', methods=['POST'])
@@ -96,7 +98,6 @@ def post():
     result = db.posts.find_one({'_id':ObjectId(pid)})
     likes = db.likes.count_documents({'post_id': pid})
     likes = likes if likes != True else 0
-    toptitle = get_best_post()
     if token_receive is not None:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({'id':payload['id']})
@@ -104,11 +105,11 @@ def post():
         mylike = db.likes.count_documents({'post_id': pid, "user_id": id})
         session["id"] = str(id)
         try:
-            return render_template("post.html", pid=pid, title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'], likes=likes, mylike=mylike, toptitle=toptitle)
+            return render_template("post.html", pid=pid, title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'], likes=likes, mylike=mylike)
         except jwt.ExpiredSignatureError:
-            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.", likes=likes, mylike=mylike, toptitle=toptitle)
+            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.", likes=likes, mylike=mylike)
     else:
-        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, likes=likes, mylike=False, toptitle=toptitle)
+        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, likes=likes, mylike=False)
 
 @app.route('/delete', methods=['POST'])
 def delete_post():
@@ -200,6 +201,8 @@ def get_best_post():
         result = db.posts.find_one({"_id":ObjectId(maxlike[0])})
     else:
         result = False
+
+    print(result)
     return result 
 
 get_best_post()
