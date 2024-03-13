@@ -40,6 +40,23 @@
     margin-bottom: 10px;
   }
 
+  .likeText {
+    font-weight: bold;
+  }
+  
+  .liked .likeText{
+    font-weight: bold;
+    color: white;
+  }
+
+  .is-warning {
+    font-weight: bold;
+  }
+
+  .is-danger {
+    font-weight: bold;
+  }
+
   div {
     word-break: break-all;
   }
@@ -78,6 +95,7 @@ function toggleLike() {
           const icon = document.getElementById('likeIcon');
           const countElement = document.getElementById('likeCount');
           let likeCount = countElement.textContent;
+
           if (button.classList.contains('liked')) {
               button.classList.remove('liked');
               icon.classList.remove('fas');
@@ -120,8 +138,7 @@ function toggleLike() {
         <span class="icon">
             <i id="likeIcon" class="fas fa-thumbs-up"></i> <!-- 따봉 아이콘 -->
         </span>
-        <span id="likeText">Like</span>
-        <span id="likeCount" class="tag is-info">{{likes}}</span>
+        <span class="likeText" id="likeCount">{{likes}}</span>
       </button>
       {% endif %}
 
@@ -130,8 +147,7 @@ function toggleLike() {
         <span class="icon">
             <i id="likeIcon" class="far fa-thumbs-up"></i> <!-- 따봉 아이콘 -->
         </span>
-        <span id="likeText">Like</span>
-        <span id="likeCount" class="tag is-info">{{likes}}</span>
+        <span class="likeText" id="likeCount">{{likes}}</span>
       </button>
       {% endif %}
       {% if id == writer_id %}

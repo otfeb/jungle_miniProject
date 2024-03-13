@@ -40,18 +40,13 @@
 {% endblock %}
 
 {% block content %}
-<section class="section">
+<section class="section mb-6">
   <article class="panel is-link">
-    <p class="panel-heading">
-      오늘의 정보 📣
-    </p>
+    <p class="panel-heading">오늘의 정보 📣</p>
     {% if toptitle == False %}
-    <a href=# class="panel-block is-active">
-      <span class="panel-icon">
-        <i class="fas fa-book" aria-hidden="true"></i>
-      </span>
+    <p class="panel-block">
       오늘 좋아요 받은 게시물이 없습니다.
-  </a>
+    </p>
   {% else %}
   <a href="/post?pid={{toptitle._id}}" class="panel-block is-active">
     <span class="panel-icon">
