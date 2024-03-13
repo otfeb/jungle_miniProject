@@ -51,7 +51,6 @@ def index():
 def signUp():
     id = request.form['userId']
     pw = request.form['userPw']
-    name = request.form['userName']
 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
