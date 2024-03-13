@@ -35,12 +35,10 @@
 {% endif %}
 <div class="tile is-ancestor">
   {% for _, idx in zip(posts, [0,1,2]) %}
-  <div class="tile is-vertical is-4" id="post">
+  <div class="tile is-vertical is-4" id="post" onclick="location.href='/post?pid={{posts[idx]._id}}'">
     <div class="tile is-parent">
       <article class="tile is-child box">
-        <p class="title">
-          <a href="/post?pid={{posts[idx]._id}}">{{ posts[idx].title }}</a>    
-        </p>
+        <p class="title">{{ posts[idx].title }}</p>
         <p class="name">{{ posts[idx].name }}</p>
         <p class="subtitle">{{ posts[idx].content }}</p>
       </article>
@@ -51,11 +49,9 @@
 
 <div class="tile is-ancestor">
 {% for idx in range(3, posts|length) %}
-  <div class="tile is-parent" id="post">
+  <div class="tile is-parent" id="post" onclick="location.href='/post?pid={{posts[idx]._id}}'">
     <article class="tile is-child box">
-      <p class="title">
-        <a href="/post?pid={{posts[idx].name}}">{{ posts[idx].title }}</a>
-      </p>
+      <p class="title">{{ posts[idx].title }}</p>
       <p class="name">{{ posts[idx].name }}</p>
       <p class="subtitle">{{ posts[idx].content }}</p>
     </article>
