@@ -54,7 +54,7 @@ def signUp():
 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
-    info = {'id':id, 'pw':pw_hash, 'name':name}
+    info = {'id':id, 'pw':pw_hash}
 
     all_id = list(db.users.find({}, {'id':1, '_id':False}))
 
@@ -93,7 +93,6 @@ def post():
     token_receive = request.cookies.get('mytoken')
 
     pid = request.args.get('pid')
-    print(pid)
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
@@ -103,12 +102,19 @@ def post():
         id = user_info['id']
         session["id"] = str(id)
         try:
-            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'], pid=pid)
+            return render_template("post.html", pid=pid, title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'])
         except jwt.ExpiredSignatureError:
             return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.")
     else:
         return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid)
 
+@app.route('/delete', methods=['POST'])
+def delete_post():
+    pid = request.form['pid_give']
+    print(pid)
+    db.posts.delete_one({'_id':ObjectId(pid)})
+
+    return jsonify({'result':'success'})
 
 @app.route('/create', methods=['POST'])
 def make_post():
@@ -141,7 +147,7 @@ def toggle_like():
     else: 
         postList.append(userId)
     db.posts.update_one({'_id':ObjectId(postId)},{'$set':{'likes':postList}})
-    
+
     return jsonify({'result': 'success'})
 
 
