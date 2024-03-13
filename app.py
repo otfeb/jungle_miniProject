@@ -115,7 +115,7 @@ def post():
 def delete_post():
     pid = request.form['pid_give']
     db.posts.delete_one({'_id':ObjectId(pid)})
-    db.likes.deleteMany({'post_id': pid})
+    db.likes.delete_many({'post_id': ObjectId(pid)})
     return jsonify({'result':'success'})
 
 @app.route('/create', methods=['POST'])
@@ -186,7 +186,7 @@ def get_best_post():
     group = db.likes.aggregate([ 
         {"$group":{"_id":"$post_id", "count":{"$sum":1}}}
         ])
-    
+    print('group=', list(group))
     maxlike = ('',-1)
     for g in list(group):
         post1 = db.posts.find_one({"_id":ObjectId(g['_id'])})
