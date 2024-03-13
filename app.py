@@ -83,7 +83,7 @@ def login():
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-        if type(token)==bytes:
+        if type(token) == bytes:
             token = token.decode('utf-8')
         return jsonify({'result':'success', 'token':token})
     else:
@@ -92,6 +92,7 @@ def login():
 
 @app.route('/post', methods=['GET'])
 def post():
+    pid = request.args.get('pid')
     return render_template("post.html")
 
 
