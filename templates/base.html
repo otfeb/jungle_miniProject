@@ -102,7 +102,8 @@
             data: {'id':id, 'pw':pw},
             success: function(res){
               if(res['result'] == 'success'){
-                $.cookie('mytoken', res['token']);
+                $.cookie('access_token', res['access_token']);
+                $.cookie('refresh_token', res['refresh_token']);
                 //alert('로그인 완료!');
                 location.href = '/'
               }
