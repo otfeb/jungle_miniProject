@@ -4,37 +4,39 @@ import datetime
 import hashlib
 from pymongo import MongoClient
 import math
+import os
 
 client = MongoClient('mongodb+srv://sparta:jungle@cluster0.sfuhxqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.dbjungle
 
 app = Flask(__name__)
-
+app.secret_key = os.urandom(24)
 SECRET_KEY = 'JUNGLE'
 
 @app.route('/', methods=['GET'])
 def index():
-    
-        token_receive = request.cookies.get('mytoken')
+    token_receive = request.cookies.get('mytoken')
 
-        page = int(request.args.get('page', 1))
-        print(page)
-        limit = 6
-        offset = (page - 1) * limit
-        posts = list(db.posts.find({},{'_id':False}).skip(offset).limit(limit))
-        tot_count = list(db.posts.find({},{'_id':False}))
-        last_page_num = math.ceil(len(tot_count) / limit)
-        print(posts)
+    page = int(request.args.get('page', 1))
+    print(page)
+    limit = 6
+    offset = (page - 1) * limit
+    posts = list(db.posts.find({},{'_id':False}).skip(offset).limit(limit))
+    tot_count = list(db.posts.find({},{'_id':False}))
+    last_page_num = math.ceil(len(tot_count) / limit)
+    print(posts)
     
-        if token_receive is not None:
-            try:
-                payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-                user_info = db.users.find_one({'id':payload['id']})
-                return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
-            except jwt.ExpiredSignatureError:
-                return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num)
-        else:
-            return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num)
+    if token_receive is not None:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'id':payload['id']})
+            id = user_info['id']
+            session["userid"] = str(id)
+            return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
+        except jwt.ExpiredSignatureError:
+            return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num)
+    else:
+        return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num)
     
     
     
@@ -81,7 +83,8 @@ def login():
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-
+        if type(token)==bytes:
+            token = token.decode('utf-8')
         return jsonify({'result':'success', 'token':token})
     else:
         return jsonify({'result':'fail', 'msg':'아이디/비밀번호가 일치하지 않습니다.'})
@@ -92,10 +95,21 @@ def post():
     return render_template("post.html")
 
 
+@app.route('/create', methods=['POST'])
+def make_post():
+    title = request.form['title_give']
+    content = request.form['content_give']
+    id = session['userid']
+    information = {'title': title, 'content': content, 'id': id}
+    print(title, content, id)
+    db.posts.insert_one(information)
+    return jsonify({'result':'success'})
+
+
 @app.route('/create', methods=['GET'])
 def create():
-    return render_template("create.html")
-
+    id = session['userid']
+    return render_template("create.html", id=id)
 
 if __name__ == '__main__':
-    app.run('0.0.0.0',port=5000,debug=True)
+    app.run('0.0.0.0',port=5011,debug=True)
