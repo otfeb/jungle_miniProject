@@ -71,12 +71,26 @@ function toggleLike() {
       url: "/toggleLike",
       data: {userId: userId, pid: pid},
       success: function (response) {
-        if (response['mylike']) {
-          {% set mylike = True %}
-        } else {
-          {% set mylike = False %}
+        if (response['result'] == 'success') {
+          const button = document.getElementById('likeButton');
+          const icon = document.getElementById('likeIcon');
+          const countElement = document.getElementById('likeCount');
+          let likeCount = countElement.textContent;
+          
+          if (button.classList.contains('liked')) {
+              button.classList.remove('liked');
+              icon.classList.remove('fas');
+              icon.classList.add('far');
+              likeCount--;
+          } else {
+              button.classList.add('liked');
+              icon.classList.remove('far');
+              icon.classList.add('fas');
+              likeCount++;
+            }
+            countElement.textContent = likeCount;
         }
-      }
+        } 
     })
   } else {
     alert("로그인을 해주세요!");
@@ -101,7 +115,7 @@ function toggleLike() {
         
       </div>
       {% if mylike == True %}
-      <button id="likeButton" class="button Liked" onclick="toggleLike()">
+      <button id="likeButton" class="button liked" onclick="toggleLike()">
         <span class="icon">
             <i id="likeIcon" class="fas fa-thumbs-up"></i> <!-- 따봉 아이콘 -->
         </span>

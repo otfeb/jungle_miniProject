@@ -24,7 +24,7 @@ def index():
     page = int(request.args.get('page', 1))
     limit = 6
     offset = (page - 1) * limit
-    posts = list(db.posts.find({}).skip(offset).limit(limit))
+    posts = list(db.posts.find({}).sort({'date':-1}).skip(offset).limit(limit))
     
     for post in posts:
         post['_id'] = str(post['_id'])
@@ -46,8 +46,6 @@ def index():
     else:
         return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num)
     
-    
-    
 
 @app.route('/signUp', methods=['POST'])
 def signUp():
@@ -56,7 +54,7 @@ def signUp():
 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
-    info = {'id':id, 'pw':pw_hash, 'likes': []}
+    info = {'id':id, 'pw':pw_hash}
 
     all_id = list(db.users.find({}, {'id':1, '_id':False}))
 
@@ -97,10 +95,8 @@ def post():
     pid = request.args.get('pid')
     result = db.posts.find_one({'_id':ObjectId(pid)})
     likes = db.likes.count_documents({'post_id': pid})
-    if likes != True:
-        likes = 0 
-    print(result)
-
+    likes = likes if likes != True else 0
+    toptitle = get_best_post()
     if token_receive is not None:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({'id':payload['id']})
@@ -108,16 +104,15 @@ def post():
         mylike = db.likes.count_documents({'post_id': pid, "user_id": id})
         session["id"] = str(id)
         try:
-            return render_template("post.html", pid=pid, title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'], likes=likes, mylike=mylike)
+            return render_template("post.html", pid=pid, title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'], likes=likes, mylike=mylike, toptitle=toptitle)
         except jwt.ExpiredSignatureError:
-            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.", likes=likes, mylike=mylike)
+            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.", likes=likes, mylike=mylike, toptitle=toptitle)
     else:
-        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, likes=likes, mylike=False)
+        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, likes=likes, mylike=False, toptitle=toptitle)
 
 @app.route('/delete', methods=['POST'])
 def delete_post():
     pid = request.form['pid_give']
-    print(pid)
     db.posts.delete_one({'_id':ObjectId(pid)})
     db.likes.deleteMany({'post_id': pid})
     return jsonify({'result':'success'})
@@ -129,7 +124,6 @@ def make_post():
     id = session['id']
     time = get_current_datetime()
     information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
-    print(title, content, id)
     db.posts.insert_one(information)
     return redirect(url_for('index'))
 
@@ -156,20 +150,8 @@ def toggle_like():
 
     return jsonify({'result': 'success', 'mylike': mylike})
 
-
-# 현재 날짜 구하는 함수
-def get_current_datetime():
-    current_utc_time = datetime.datetime.utcnow()
-
-    kr_tz = pytz.timezone('Asia/Seoul')
-    time = current_utc_time.replace(tzinfo=pytz.utc).astimezone(kr_tz)
-    time = time.strftime('%Y-%m-%d %H:%M:%S')
-
-    return time
-
 @app.route('/getData', methods=['GET'])
 def getData():
-
     title = request.args.get('title')
     content = request.args.get('content')
     id = request.args.get('id')
@@ -185,5 +167,41 @@ def update():
     db.posts.update_one({'_id':pid}, {'$set':{'title':title, 'content':content}})
     return redirect(url_for('index'))
 
+# 현재 날짜 구하는 함수
+def get_current_datetime():
+    current_utc_time = datetime.datetime.utcnow()
+
+    kr_tz = pytz.timezone('Asia/Seoul')
+    time = current_utc_time.replace(tzinfo=pytz.utc).astimezone(kr_tz)
+    time = time.strftime('%Y-%m-%d %H:%M:%S')
+
+    return time
+
+# 가장 인기있는 게시글 찾는 함수
+def get_best_post():
+    time = get_current_datetime().split()[0]
+    group = db.likes.aggregate([ 
+        {"$group":{"_id":"$post_id", "count":{"$sum":1}}}
+        ])
+    
+    maxlike = ('',-1)
+    for g in list(group):
+        post1 = db.posts.find_one({"_id":ObjectId(g['_id'])})
+        if post1['regist_date'].split()[0] == time:
+            if g['count'] > maxlike[1]:
+                maxlike = (g['_id'], g['count'])
+            elif g['count'] == maxlike[1]:
+                post2 = db.posts.find_one({"_id":ObjectId(maxlike[0])})
+                if post1['regist_date'] > post2['regist_date']:
+                    maxlike = (g['_id'], g['count'])
+        else:
+            continue
+    if maxlike[0]:
+        result = db.posts.find_one({"_id":ObjectId(maxlike[0])})
+    else:
+        result = False
+    return result 
+
+get_best_post()
 if __name__ == '__main__':
     app.run('0.0.0.0',port=5011,debug=True)
