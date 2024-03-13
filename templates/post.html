@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
 {% block style %}
+
+  #title{
+    float: left;
+  }
+  #writer{
+    float: left;
+  }
+  #time{
+    float: right;
+    color: gray;
+  }
+  #btn_div{
+    float: right;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
   .container {
     margin-top: 5%;
     margin-bottom: 5%;
@@ -30,6 +46,7 @@
 
   #content {
     white-space: pre-line;
+    margin-bottom: 5%;
   }
 {% endblock %}
 
@@ -72,14 +89,16 @@ function toggleLike() {
 <div class="container">
     <div class="card">
       <div class="card-content">
-        <p class="title is-2 has-text-centered" id="title">{{ title }}</p>
-        <p class="subtitle is-4 has-text-centered">{{writer_id}}</p>
+        <p class="is-size-6 has-text-centered" id="time">{{time}}</p>
+        <p class="title is-2 has-text-centered" id="title">{{ title }}</p><br><br><br>
+        <p class="subtitle is-4 has-text-centered" id="writer">{{writer_id}}</p><br><br>
+        <hr>
         <div class="content">
           <p id="content">
             {{content}}
           </p>
         </div>
-        <p class="is-size-6 has-text-centered">{{time}}</p>
+        
       </div>
       {% if mylike == True %}
       <button id="likeButton" class="button Liked" onclick="toggleLike()">
@@ -100,10 +119,13 @@ function toggleLike() {
         <span id="likeCount" class="tag is-info">{{likes}}</span>
       </button>
       {% endif %}
+      {% if id == writer_id %}
+      <div id="btn_div">
+        <button class="button is-warning" id="update_btn" onclick="getData('{{ pid }}')">수정</button>
+        <button class="button is-danger" onclick="delete_post('{{ pid }}')">삭제</button>
+      </div>
+      {% endif %}
     </div>
-    {% if id == writer_id %}
-    <button class="button is-warning" onclick="getData('{{ pid }}')">수정</button>
-    <button onclick="delete_post('{{ pid }}')">삭제</button>
-    {% endif %}
+   
   </div>
 {% endblock %}
