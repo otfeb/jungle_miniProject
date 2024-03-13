@@ -11,9 +11,6 @@
         width: 1200px;
         margin: auto;
       }
-      #userId {
-        width: 495px;
-      }
       {% block style %}
       {% endblock %}
     </style>
@@ -39,40 +36,27 @@
           $("#login_modal").attr("class", "modal");
         }
   
-        function check(){
-            if($("#chkSign").html() == "&nbsp;사용가능한 아이디 입니다"){
-                alert('회원가입에 성공하였습니다!');
-                return true
-            }
-            else{
-                alert("중복체크를 확인해주세요 !");
-                return false
-            }
-        }
         function idCheck(){
-            userId = $("#userId").val();
-  
-            if(userId == ""){
-                alert("id를 입력해주세요.");
-                $("#userId").focus();
-                return;
-            }
-            $.ajax({
-                type: 'post',
-                url: '/idCheck',
-                data: {'userId':userId},
-                success:function(res){
-                    if(res == '1'){
-                        $("#chkSign").html("&nbsp;사용가능한 아이디 입니다");
-                        $("#chkSign").css("color","green");
-                    }
-                    else{
-                        $("#chkSign").html("&nbsp;이미 같은 아이디가 있습니다");
-                        $("#chkSign").css("color","red");
-                    }
+          userId = $("#userId").val();
+
+          $.ajax({
+              type: 'post',
+              url: '/idCheck',
+              data: {'userId':userId},
+              success:function(res){
+                if(res == '1'){
+                  alert('회원가입에 성공하였습니다!');
+                  return true;
                 }
-            });
-        }
+                else{
+                  $("#chkSign").html("동일한 아이디가 존재합니다.");
+                  $("#chkSign").css("color", "red");
+                  $("#userId").focus();
+                  return false;
+                }
+              }
+          });
+      }
   
         function login_check(){
           var id = $("#user_login_id").val();
@@ -104,6 +88,15 @@
     </script>
   </head>
   <body>
+
+    <!-- 토큰이 만료되었을 때 경고창에 msg 출력 -->
+    {% if msg %}
+      <script>
+        alert("{{msg}}");
+        $.removeCookie('mytoken');
+      </script>
+    {% endif %}
+
     <div class="wrap">
       <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
@@ -173,7 +166,7 @@
     <div class="modal" id="signUp_modal">
         <div class="modal-background"></div>
         <div class="modal-card">
-          <form action="/signUp" method="post" onsubmit="return check()">
+          <form action="/signUp" method="post" onsubmit="return idCheck()">
           <header class="modal-card-head">
             <p class="modal-card-title"><b>회원가입</b></p>
             <button type="button" class="delete" aria-label="close" onclick="close_signUp()"></button>
@@ -184,7 +177,6 @@
               <label class="label">ID</label>
               <div class="control">
                 <input class="input" type="text" name="user_id" id="userId" placeholder="아이디를 입력해주세요">
-                <button type="button" class="button is-light" onclick=idCheck()>중복체크</button>
               </div>
               <p class="help" id="chkSign"></p>
             </div>
