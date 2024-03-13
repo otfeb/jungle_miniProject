@@ -1,5 +1,25 @@
 {% extends "base.html" %}
 
+{% block script %}
+function postInfo() {
+  let title = $("#post-title").val();
+  let content = $("#post-content").val();
+  $.ajax({
+    type: "POST",
+    url: "/create",
+    data: {title_give:title, content_give:content},
+    success: function (response) {
+      if (response["result"]=="success") {
+        alert("포스팅 성공");
+        location.href = '/'
+      } else {
+        alert("서버 오류!");
+      }
+    }
+  })
+}
+{% endblock %}
+
 {% block content %}
 <section class="section">
   <div class="container">

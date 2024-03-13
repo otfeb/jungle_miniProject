@@ -12,14 +12,23 @@
   padding: 10px 10px;
   /* 살짝 패딩을 추가합니다. */
   transform: translateY(-110%);
+  position: absolute;
+  right: 1%;
 }
+#btn-container {
+  margin-bottom: 10px;
+  display: flex;
+}  
+
 {% endblock %}
 
 
 
 {% block content %}
 {% if id != null %}
-<button class="button is-success place" onclick="location.href='/create'">글쓰기</button>
+<div class="container" id="btn-container">
+    <button align="right" class="button is-success place" onclick="location.href='/create'">글쓰기</button>
+</div>
 {% endif %}
 <div class="tile is-ancestor">
   {% for _, idx in zip(posts, [0,1,2]) %}
@@ -36,12 +45,14 @@
 
 <div class="tile is-ancestor">
 {% for idx in range(3, posts|length) %}
+<div class="tile is-vertical is-4" id="post">
   <div class="tile is-parent" id="post">
     <article class="tile is-child box">
       <p class="title">{{ posts[idx].title }}</p>
       <p class="subtitle">{{ posts[idx].content }}</p>
     </article>
   </div>
+</div>
 {% endfor %}
 </div>
 
