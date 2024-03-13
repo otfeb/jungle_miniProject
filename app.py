@@ -154,9 +154,11 @@ def toggle_like():
 @app.route('/getData', methods=['GET'])
 def getData():
     title = request.args.get('title')
-    content = request.args.get('content')
     id = request.args.get('id')
     pid = request.args.get('pid')
+    object_pid = ObjectId(pid)
+    content = db.posts.find_one({'_id':object_pid})['content']
+    
     return render_template("update.html", title = title, content = content, id = id, pid = pid)
 
 @app.route('/update', methods=['POST'])
