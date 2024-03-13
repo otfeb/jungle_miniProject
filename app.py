@@ -55,7 +55,7 @@ def signUp():
 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
-    info = {'id':id, 'pw':pw_hash, 'name':name}
+    info = {'id':id, 'pw':pw_hash}
 
     all_id = list(db.users.find({}, {'id':1, '_id':False}))
 
