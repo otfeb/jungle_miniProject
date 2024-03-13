@@ -26,7 +26,28 @@
       }
     })
   }
-{% endblock %}
+
+function toggleLike() {
+  let userId = '{{ id }}';
+  const pid = '{{pid}}';
+  $.ajax({
+    type: "POST",
+    url: "/toggleLike",
+    data: {userId: userId, pid: pid},
+    success: function (response) {
+      if (response['result']=='success') {
+        console.log("Like toggled successfully");
+        const button = document.getElementById('likeButton');
+        if (button.innerText === 'Like') {
+          button.innerText = 'Unlike';
+        } else {
+          button.innerText = 'Like';
+        }
+      }
+    }
+  })
+}
+{% endblock  %}
 
 {% block content %}
 
@@ -43,10 +64,10 @@
         <p class="is-size-6 has-text-centered">{{time}}</p>
       </div>
     </div>
+    <button id="likeButton" onclick="toggleLike()">Like</button>
     {% if id == writer_id %}
     <button class="button is-warning" onclick="getData()">수정</button>
-    <input type="hidden" id="idx" value="{{id}}">
-    <button>삭제</button>
+    <button onclick="delete_post('{{ pid }}')">삭제</button>
     {% endif %}
   </div>
 {% endblock %}
