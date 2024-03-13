@@ -115,7 +115,7 @@ def post():
 def delete_post():
     pid = request.form['pid_give']
     db.posts.delete_one({'_id':ObjectId(pid)})
-    db.likes.deleteMany({'post_id': pid})
+    db.likes.delete_many({'post_id': ObjectId(pid)})
     return jsonify({'result':'success'})
 
 @app.route('/create', methods=['POST'])
@@ -186,10 +186,11 @@ def get_best_post():
     group = db.likes.aggregate([ 
         {"$group":{"_id":"$post_id", "count":{"$sum":1}}}
         ])
-    
+    print('group=', list(group))
     maxlike = ('',-1)
     for g in list(group):
         post1 = db.posts.find_one({"_id":ObjectId(g['_id'])})
+<<<<<<< HEAD
         
         if post1['regist_date'].split()[0] == time:
             if g['count'] > maxlike[1]:
@@ -197,9 +198,18 @@ def get_best_post():
             elif g['count'] == maxlike[1]:
                 post2 = db.posts.find_one({"_id":ObjectId(maxlike[0])})
                 if post1['regist_date'] > post2['regist_date']:
+=======
+        if post1 is not None:
+            if post1['regist_date'].split()[0] == time:
+                if g['count'] > maxlike[1]:
+>>>>>>> 3fcbb5696f9f02d4ee245b3a8a5ae413d148c940
                     maxlike = (g['_id'], g['count'])
-        else:
-            continue
+                elif g['count'] == maxlike[1]:
+                    post2 = db.posts.find_one({"_id":ObjectId(maxlike[0])})
+                    if post1['regist_date'] > post2['regist_date']:
+                        maxlike = (g['_id'], g['count'])
+            else:
+                continue
     if maxlike[0]:
         result = db.posts.find_one({"_id":ObjectId(maxlike[0])})
     else:
