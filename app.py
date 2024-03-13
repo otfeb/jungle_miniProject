@@ -83,10 +83,17 @@ def login():
             'id': id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
         }
+        payload2 = {
+            'id': id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=15)
+        }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        refresh_token = jwt.encode(payload2, SECRET_KEY, algorithm='HS256')
         if type(token) == bytes:
             token = token.decode('utf-8')
-        return jsonify({'result':'success', 'token':token})
+        if type(refresh_token) == bytes:
+            refresh_token = refresh_token.decode('utf-8')
+        return jsonify({'result':'success', 'token':token, 'refresh_token':refresh_token})
     else:
         return jsonify({'result':'fail', 'msg':'아이디/비밀번호가 일치하지 않습니다.'})
 
