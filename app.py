@@ -190,6 +190,7 @@ def get_best_post():
     maxlike = ('',-1)
     for g in list(group):
         post1 = db.posts.find_one({"_id":ObjectId(g['_id'])})
+        
         if post1['regist_date'].split()[0] == time:
             if g['count'] > maxlike[1]:
                 maxlike = (g['_id'], g['count'])
