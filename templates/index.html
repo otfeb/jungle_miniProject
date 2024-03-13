@@ -13,12 +13,21 @@
   padding: 10px 10px;
   /* 살짝 패딩을 추가합니다. */
   transform: translateY(-110%);
+  position: absolute;
+  right: 1%;
 }
+#btn-container {
+  margin-bottom: 10px;
+  display: flex;
+}  
+
 {% endblock %}
 
 {% block content %}
 {% if id != null %}
-<button class="button is-success place" onclick="location.href='/create'">글쓰기</button>
+<div class="container" id="btn-container">
+  <button align="right" class="button is-success place" onclick="location.href='/create'">글쓰기</button>
+</div>
 {% endif %}
 <div class="tile is-ancestor">
   {% for _, idx in zip(posts, [0,1,2]) %}
@@ -45,10 +54,15 @@
 </div>
 
 <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+{% set page = page|int %}
+{% if page != 1 %}
 <a class="pagination-previous" href="?page={{ page - 1 }}">Previous</a>
+{% endif %}
+{% set last = last|int %}
+{% if page != last %}
 <a class="pagination-next" href="?page={{ page + 1 }}">Next page</a>
+{% endif %}
 <ul class="pagination-list">
-  {% set page = page|int %}
   {% if page != 1 %}
     <li>
       <a class="pagination-link" href="?page={{ page - 1 }}">{{ page - 1 }}</a>
@@ -57,8 +71,7 @@
   <li>
     <a class="pagination-link is-current" aria-label="Page 46" aria-current="page">{{ page }}</a>
   </li>
-  {% set last = last|int %}
-  {% if page == last %}
+  {% if page != last %}
     <li>
       <a class="pagination-link" href="?page={{ page + 1 }}">{{ page + 1 }}</a>
     </li>
