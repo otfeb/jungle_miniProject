@@ -93,8 +93,9 @@
 <div class="tile is-vertical is-4" id="post" onclick="location.href='/post?pid={{posts[idx]._id}}'">
   <div class="tile is-parent">
     <article class="tile is-child box">
-      <p class="title">{{ posts[idx].title }}</p>
-      <p class="id">{{ posts[idx].id }}</p>
+      <p class="title" id="title">{{ posts[idx].title }}</p>
+      <p class="id"><b>작성자 : {{ posts[idx].id }}</b></p>
+      <hr>
       <p class="subtitle" id="content">{{ posts[idx].content }}</p>
     </article>
   </div>

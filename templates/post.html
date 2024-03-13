@@ -4,6 +4,7 @@
 
   #title{
     float: left;
+    margin-bottom: 0px;
   }
   #writer{
     float: left;
@@ -122,9 +123,10 @@ function toggleLike() {
 <div class="container">
     <div class="card">
       <div class="card-content">
-        <p class="is-size-6 has-text-centered" id="time">{{time}}</p>
+        
         <p class="title is-2 has-text-centered" id="title">{{ title }}</p><br><br><br>
         <p class="subtitle is-4 has-text-centered" id="writer">{{writer_id}}</p><br><br>
+        <p class="is-size-6 has-text-centered" id="time">{{time}}</p><br>
         <hr>
         <div class="content">
           <p id="content">
