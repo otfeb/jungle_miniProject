@@ -15,6 +15,8 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 SECRET_KEY = 'JUNGLE'
 
+print('jwt version : ', jwt.__version__)
+
 @app.route('/', methods=['GET'])
 def index():
     token_receive = request.cookies.get('mytoken')
