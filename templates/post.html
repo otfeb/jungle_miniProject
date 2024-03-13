@@ -19,7 +19,7 @@
     <div class="card">
       <div class="card-content">
         <p class="title is-2 has-text-centered">{{ title }}</p>
-        <p class="subtitle is-4 has-text-centered">{{id}}</p>
+        <p class="subtitle is-4 has-text-centered">{{writer}}</p>
         <div class="content">
           <p>
             {{content}}
@@ -28,5 +28,9 @@
         <p class="is-size-6 has-text-centered">{{time}}</p>
       </div>
     </div>
+    {% if id == name %}
+    <button>수정</button>
+    <button>삭제</button>
+    {% endif %}
   </div>
 {% endblock %}
