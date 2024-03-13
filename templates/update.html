@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">게시글 수정</h1>
+
+    <form action="/update" method="post">
+      <div class="field">
+        <label class="label">제목</label>
+        <div class="control">
+          <input id="post-title" name="title_give" class="input" type="text" value="{{title}}" required="required">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">내용</label>
+        <div class="control">
+          <textarea id="post-content" name="content_give" class="textarea" required="required">{{content}}</textarea>
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button type="submit" class="button is-warning">수정</button>
+        </div>
+        <div class="control">
+          <button type="button" class="button is-light">취소</button>
+        </div>
+      </div>
+    </form>
+
+
+  </div>
+</section>
+
+{% endblock %}

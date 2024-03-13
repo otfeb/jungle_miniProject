@@ -15,6 +15,18 @@
 {% endblock %}
 
 {% block script %}
+  function getData(){
+    var pid = '{{pid}}';
+    $.ajax({
+      type: 'get',
+      url: '/getData'+'?id={{id}}&title={{title}}&content={{content}}&pid='+pid,
+      data:{},
+      success: function(res){
+
+      }
+    })
+  }
+
 function toggleLike() {
   let userId = '{{ id }}';
   const pid = '{{pid}}';
@@ -38,13 +50,14 @@ function toggleLike() {
 {% endblock  %}
 
 {% block content %}
+
 <div class="container">
     <div class="card">
       <div class="card-content">
-        <p class="title is-2 has-text-centered">{{ title }}</p>
+        <p class="title is-2 has-text-centered" id="title">{{ title }}</p>
         <p class="subtitle is-4 has-text-centered">{{writer_id}}</p>
         <div class="content">
-          <p>
+          <p id="content">
             {{content}}
           </p>
         </div>
@@ -53,7 +66,7 @@ function toggleLike() {
     </div>
     <button id="likeButton" onclick="toggleLike()">Like</button>
     {% if id == writer_id %}
-    <button>수정</button>
+    <button class="button is-warning" onclick="getData()">수정</button>
     <button onclick="delete_post('{{ pid }}')">삭제</button>
     {% endif %}
   </div>
