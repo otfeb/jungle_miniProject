@@ -25,7 +25,16 @@
 {% endblock %}
 
 {% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title">Hello World</h1>
+    <p class="subtitle">
+      My first website with <strong>Bulma</strong>!
+    </p>
+  </div>
+</section>
 {% if id != null %}
+
 <div class="container" id="btn-container">
   <button align="right" class="button is-success place" onclick="location.href='/create'">글쓰기</button>
 </div>
