@@ -56,7 +56,7 @@ def signUp():
 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
-    info = {'id':id, 'pw':pw_hash}
+    info = {'id':id, 'pw':pw_hash, 'likes': []}
 
     all_id = list(db.users.find({}, {'id':1, '_id':False}))
 
@@ -96,26 +96,30 @@ def post():
 
     pid = request.args.get('pid')
     result = db.posts.find_one({'_id':ObjectId(pid)})
+    likes = db.likes.count_documents({'post_id': pid})
+    if likes != True:
+        likes = 0 
     print(result)
 
     if token_receive is not None:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({'id':payload['id']})
         id = user_info['id']
+        mylike = db.likes.count_documents({'post_id': pid, "user_id": id})
         session["id"] = str(id)
         try:
-            return render_template("post.html", pid=pid, title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'])
+            return render_template("post.html", pid=pid, title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'], likes=likes, mylike=mylike)
         except jwt.ExpiredSignatureError:
-            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.")
+            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.", likes=likes, mylike=mylike)
     else:
-        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid)
+        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, likes=likes, mylike=False)
 
 @app.route('/delete', methods=['POST'])
 def delete_post():
     pid = request.form['pid_give']
     print(pid)
     db.posts.delete_one({'_id':ObjectId(pid)})
-
+    db.likes.deleteMany({'post_id': pid})
     return jsonify({'result':'success'})
 
 @app.route('/create', methods=['POST'])
@@ -124,7 +128,7 @@ def make_post():
     content = request.form['content_give']
     id = session['id']
     time = get_current_datetime()
-    information = {'title': title, 'content': content, 'id': id, 'regist_date': time, 'likes': []}
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
     print(title, content, id)
     db.posts.insert_one(information)
     return redirect(url_for('index'))
@@ -141,16 +145,16 @@ def toggle_like():
     userId = request.form['userId']
     postId = request.form['pid']
 
-    post = db.posts.find_one({'_id':ObjectId(postId)})
-    postList = post['likes']
+    mylike = db.likes.find_one({'post_id': postId, 'user_id': userId})
     # 좋아요 상태 확인하고 토글
-    if userId in postList:
-        postList.remove(userId)
+    if mylike:
+        db.likes.delete_one({'post_id': postId, 'user_id': userId})
+        mylike = False
     else: 
-        postList.append(userId)
-    db.posts.update_one({'_id':ObjectId(postId)},{'$set':{'likes':postList}})
+        db.likes.insert_one({'post_id': postId, 'user_id': userId})
+        mylike = True
 
-    return jsonify({'result': 'success'})
+    return jsonify({'result': 'success', 'mylike': mylike})
 
 
 # 현재 날짜 구하는 함수
