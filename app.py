@@ -24,7 +24,7 @@ def index():
     page = int(request.args.get('page', 1))
     limit = 6
     offset = (page - 1) * limit
-    posts = list(db.posts.find({}).sort({'date':-1}).skip(offset).limit(limit))
+    posts = list(db.posts.find({}).sort({'regist_date':-1}).skip(offset).limit(limit))
     
     toptitle = get_best_post()
 
@@ -97,7 +97,7 @@ def post():
     pid = request.args.get('pid')
     result = db.posts.find_one({'_id':ObjectId(pid)})
     likes = db.likes.count_documents({'post_id': pid})
-    likes = likes if likes != True else 0
+    likes = likes if likes == True else 0
     if token_receive is not None:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({'id':payload['id']})
@@ -205,6 +205,5 @@ def get_best_post():
     print(result)
     return result 
 
-get_best_post()
 if __name__ == '__main__':
     app.run('0.0.0.0',port=5011,debug=True)
