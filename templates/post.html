@@ -65,27 +65,22 @@
 function toggleLike() {
   let userId = '{{ id }}';
   const pid = '{{pid}}';
-  $.ajax({
-    type: "POST",
-    url: "/toggleLike",
-    data: {userId: userId, pid: pid},
-    success: function (response) {
-      if (response['result']=='success') {
-        console.log("Like toggled successfully");
-        const button = document.getElementById('likeButton');
-        const icon = document.getElementById('likeIcon');
-        if (button.classList.contains('liked')) {
-          button.classList.remove('liked');
-          icon.classList.remove('fas');
-          icon.classList.add('far'); // 좋아요 상태가 아닐 때는 빈 따봉 아이콘으로 변경
+  if (userId) {
+    $.ajax({
+      type: "POST",
+      url: "/toggleLike",
+      data: {userId: userId, pid: pid},
+      success: function (response) {
+        if (response['mylike']) {
+          {% set mylike = True %}
         } else {
-          button.classList.add('liked');
-          icon.classList.remove('far');
-          icon.classList.add('fas'); // 좋아요 상태일 때는 채워진 따봉 아이콘으로 변경
+          {% set mylike = False %}
         }
       }
-    }
-  })
+    })
+  } else {
+    alert("로그인을 해주세요!");
+  }
 }
 {% endblock  %}
 
@@ -105,13 +100,25 @@ function toggleLike() {
         </div>
         
       </div>
+      {% if mylike == True %}
+      <button id="likeButton" class="button Liked" onclick="toggleLike()">
+        <span class="icon">
+            <i id="likeIcon" class="fas fa-thumbs-up"></i> <!-- 따봉 아이콘 -->
+        </span>
+        <span id="likeText">Like</span>
+        <span id="likeCount" class="tag is-info">{{likes}}</span>
+      </button>
+      {% endif %}
+
+      {% if mylike == False %}
       <button id="likeButton" class="button" onclick="toggleLike()">
         <span class="icon">
             <i id="likeIcon" class="far fa-thumbs-up"></i> <!-- 따봉 아이콘 -->
         </span>
         <span id="likeText">Like</span>
+        <span id="likeCount" class="tag is-info">{{likes}}</span>
       </button>
-
+      {% endif %}
       {% if id == writer_id %}
       <div id="btn_div">
         <button class="button is-warning" id="update_btn" onclick="getData('{{ pid }}')">수정</button>
