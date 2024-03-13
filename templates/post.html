@@ -30,7 +30,7 @@
     </div>
     {% if id == writer_id %}
     <button>수정</button>
-    <button>삭제</button>
+    <button onclick="delete_post('{{ pid }}')">삭제</button>
     {% endif %}
   </div>
 {% endblock %}
