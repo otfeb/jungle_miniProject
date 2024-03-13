@@ -83,6 +83,8 @@ def login():
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        if type(token)==bytes:
+            token = token.decode('utf-8')
         return jsonify({'result':'success', 'token':token})
     else:
         return jsonify({'result':'fail', 'msg':'아이디/비밀번호가 일치하지 않습니다.'})
@@ -110,4 +112,4 @@ def create():
     return render_template("create.html", id=id)
 
 if __name__ == '__main__':
-    app.run('0.0.0.0',port=5000,debug=True)
+    app.run('0.0.0.0',port=5011,debug=True)
