@@ -1,6 +1,7 @@
 from flask import *
 import jwt
 import datetime
+import pytz
 import hashlib
 from pymongo import MongoClient
 import math
@@ -19,15 +20,17 @@ def index():
     token_receive = request.cookies.get('mytoken')
 
     page = int(request.args.get('page', 1))
-    print(page)
     limit = 6
     offset = (page - 1) * limit
     posts = list(db.posts.find({}).skip(offset).limit(limit))
+    
     for post in posts:
         post['_id'] = str(post['_id'])
     tot_count = list(db.posts.find({},{'_id':False}))
     last_page_num = math.ceil(len(tot_count) / limit)
-    print(posts)
+    
+    if last_page_num == 0:
+        last_page_num = 1
     
     if token_receive is not None:
         try:
@@ -94,15 +97,15 @@ def post():
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html", title=result['title'], content=result['content'])
-
+    return render_template("post.html", title=result['title'], id=result['id'], content=result['content'], time=result['regist_date'])
 
 @app.route('/create', methods=['POST'])
 def make_post():
     title = request.form['title_give']
     content = request.form['content_give']
     id = session['userid']
-    information = {'title': title, 'content': content, 'id': id}
+    time = get_current_datetime()
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
     print(title, content, id)
     db.posts.insert_one(information)
     return redirect(url_for('index'))
@@ -113,6 +116,16 @@ def create():
     id = session['userid']
     return render_template("create.html", id=id)
 
+
+# 현재 날짜 구하는 함수
+def get_current_datetime():
+    current_utc_time = datetime.datetime.utcnow()
+
+    kr_tz = pytz.timezone('Asia/Seoul')
+    time = current_utc_time.replace(tzinfo=pytz.utc).astimezone(kr_tz)
+    time = time.strftime('%Y-%m-%d %H:%M:%S')
+
+    return time
 
 if __name__ == '__main__':
     app.run('0.0.0.0',port=5011,debug=True)
