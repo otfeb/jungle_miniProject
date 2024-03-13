@@ -41,13 +41,28 @@
 
 {% block content %}
 <section class="section">
-  <div class="container">
-    <h1 class="title">Hello World</h1>
-    <p class="subtitle">
-      My first website with <strong>Bulma</strong>!
+  <article class="panel is-link">
+    <p class="panel-heading">
+      오늘의 정보 📣
     </p>
-  </div>
+    {% if toptitle == False %}
+    <a href=# class="panel-block is-active">
+      <span class="panel-icon">
+        <i class="fas fa-book" aria-hidden="true"></i>
+      </span>
+      오늘 좋아요 받은 게시물이 없습니다.
+  </a>
+  {% else %}
+  <a href="/post?pid={{toptitle._id}}" class="panel-block is-active">
+    <span class="panel-icon">
+      <i class="fas fa-book" aria-hidden="true"></i>
+    </span>
+    {{ toptitle.title }}
+</a>
+  {% endif %}
+  </article>
 </section>
+
 {% if id != null %}
 
 <div class="container" id="btn-container">
