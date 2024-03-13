@@ -36,8 +36,8 @@ def index():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'id':payload['id']})
-            name = user_info['name']
-            session["username"] = str(name)
+            id = user_info['id']
+            session["userid"] = str(id)
             return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
         except jwt.ExpiredSignatureError:
             return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num)
@@ -97,24 +97,24 @@ def post():
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html", title=result['title'], id=result['name'], content=result['content'], time=result['regist_date'])
+    return render_template("post.html", title=result['title'], id=result['id'], content=result['content'], time=result['regist_date'], likes=len(result['likes']))
 
 @app.route('/create', methods=['POST'])
 def make_post():
     title = request.form['title_give']
     content = request.form['content_give']
-    name = session['username']
+    id = session['userid']
     time = get_current_datetime()
-    information = {'title': title, 'content': content, 'name': name, 'regist_date': time}
-    print(title, content, name)
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time, 'likes':[]}
+    print(title, content, id)
     db.posts.insert_one(information)
     return redirect(url_for('index'))
 
 
 @app.route('/create', methods=['GET'])
 def create():
-    name = session['username']
-    return render_template("create.html", id=name)
+    id = session['userid']
+    return render_template("create.html", id=id)
 
 
 # 현재 날짜 구하는 함수

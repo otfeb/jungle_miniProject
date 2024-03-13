@@ -38,33 +38,20 @@
           $("#user_login_pw").val("");
           $("#login_modal").attr("class", "modal");
         }
-  
-      //   function idCheck(){
-      //     userId = $("#userId").val();
-
-      //     $.ajax({
-      //         type: 'post',
-      //         url: '/idCheck',
-      //         data: {'userId':userId},
-      //         success:function(res){
-      //           if(res == '1'){
-      //             alert('회원가입에 성공하였습니다!');
-      //             return true;
-      //           }
-      //           else{
-      //             $("#chkSign").html("동일한 아이디가 존재합니다.");
-      //             $("#chkSign").css("color", "red");
-      //             $("#userId").focus();
-      //             return false;
-      //           }
-      //         }
-      //     });
-      // }
 
         function idCheck(){
-          var userId = $("#userId").val()
-          var userPw = $("#userPw").val()
-          var userName = $("#userName").val()
+          var userId = $("#userId").val();
+          var userPw = $("#userPw").val();
+          var userName = $("#userName").val();
+
+          let reg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,12}$/;
+
+          if(!reg.test(userPw)){
+            alert('영문, 숫자, 특수문자 포함 8~12자리로 입력해주세요');
+            $("#userPw").val('');
+            $("#userPw").focus();
+            return
+          }
 
           $.ajax({
             type: 'post',
@@ -77,10 +64,10 @@
               }
               else{
                 alert(res['msg']);
-                $("#userId").val('')
-                $("#userPw").val('')
-                $("#userName").val('')
-                $("#userId").focus()
+                $("#userId").val('');
+                $("#userPw").val('');
+                $("#userName").val('');
+                $("#userId").focus();
               }
             }
           })
@@ -213,8 +200,9 @@
             <div class="field">
               <label class="label">PW</label>
               <div class="control">
-                <input class="input" type="text" id="userPw" placeholder="비밀번호를 입력해주세요">
+                <input class="input" type="password" id="userPw" placeholder="비밀번호를 입력해주세요">
               </div>
+              <p class="help is-danger">영문, 숫자, 특수문자 포함 8~12자리</p>
             </div>
     
             <div class="field">
@@ -252,7 +240,7 @@
             <div class="field">
               <label class="label">PW</label>
               <div class="control">
-                <input class="input" type="text" id="user_login_pw" placeholder="비밀번호를 입력해주세요">
+                <input class="input" type="password" id="user_login_pw" placeholder="비밀번호를 입력해주세요">
               </div>
             </div>
   
