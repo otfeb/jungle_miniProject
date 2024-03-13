@@ -86,7 +86,7 @@ def login():
         }
         refresh_payload = {
             'id': id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
         }
 
         access_token = jwt.encode(access_payload, SECRET_KEY, algorithm='HS256')
@@ -181,11 +181,18 @@ def update():
 
 @app.errorhandler(ExpiredSignatureError)
 def unauthorized(error):
+    url = request.url
     refresh_token = request.cookies.get('refresh_token')
     user_id = verify_refresh_token(refresh_token)
     if user_id is not None:
         access_token = generate_access_token(user_id)
-        return render_template()
+        redirect_url = url_for('index')
+        response = redirect(redirect_url)
+
+    # 쿠키 설정
+        response.set_cookie('access_token', access_token)
+        return response
+
     else:
         return redirect(url_for('index'))
 
@@ -205,7 +212,7 @@ def verify_refresh_token(refresh_token):
 def generate_access_token(user_id):
     payload = {
         'id': user_id,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3)
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
     }
     access_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
     return access_token
