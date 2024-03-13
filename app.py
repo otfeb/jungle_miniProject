@@ -103,7 +103,7 @@ def make_post():
     information = {'title': title, 'content': content, 'id': id}
     print(title, content, id)
     db.posts.insert_one(information)
-    return jsonify({'result':'success'})
+    return redirect(url_for('index'))
 
 
 @app.route('/create', methods=['GET'])
