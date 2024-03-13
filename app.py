@@ -46,29 +46,23 @@ def index():
 
 @app.route('/signUp', methods=['POST'])
 def signUp():
-    id = request.form['user_id']
-    pw = request.form['user_pw']
-    name = request.form['user_name']
+    id = request.form['userId']
+    pw = request.form['userPw']
+    name = request.form['userName']
 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
     info = {'id':id, 'pw':pw_hash, 'name':name}
-    
-    db.users.insert_one(info)
-    return redirect(url_for('index'))
 
+    all_id = list(db.users.find({}, {'id':1, '_id':False}))
 
-@app.route('/idCheck', methods=['POST'])
-def idCheck():
-   userId = request.form['userId']
-   all_id = list(db.users.find({}, {'id':1, '_id':False}))
+    all_id_values = [item['id'] for item in all_id]
 
-   all_id_values = [item['id'] for item in all_id]
-
-   if userId in all_id_values:
-      return '0'
-   else:
-      return '1'
+    if id in all_id_values:
+        return jsonify({'result':'fail', 'msg':'동일한 아이디가 존재합니다'})
+    else:
+        db.users.insert_one(info)
+        return jsonify({'result':'success'})
 
 
 @app.route('/login', methods=['POST'])
