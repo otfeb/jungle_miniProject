@@ -103,8 +103,7 @@ def post():
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html", title=result['title'], content=result['content'])
-
+    return render_template("post.html", title=result['title'], id=result['id'], content=result['content'], time=result['regist_date'])
 
 @app.route('/create', methods=['POST'])
 def make_post():
@@ -130,6 +129,7 @@ def get_current_datetime():
 
     kr_tz = pytz.timezone('Asia/Seoul')
     time = current_utc_time.replace(tzinfo=pytz.utc).astimezone(kr_tz)
+    time = time.strftime('%Y-%m-%d %H:%M:%S')
 
     return time
 
