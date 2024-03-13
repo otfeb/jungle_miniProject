@@ -36,8 +36,8 @@ def index():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'id':payload['id']})
-            name = user_info['id']
-            session["id"] = str(id)
+            id = user_info['id']
+            session["userid"] = str(id)
             return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
         except jwt.ExpiredSignatureError:
             return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num)
@@ -55,7 +55,7 @@ def signUp():
 
     pw_hash = hashlib.sha256(pw.encode('utf-8')).hexdigest()
 
-    info = {'id':id, 'pw':pw_hash, 'name':name}
+    info = {'id':id, 'pw':pw_hash}
 
     all_id = list(db.users.find({}, {'id':1, '_id':False}))
 
@@ -98,21 +98,21 @@ def post():
     # JWT 토큰이 있는지 확인
     if jwt_token:
         print("JWT 토큰이 있습니다:", jwt_token)
-        name = session['id']
+        id = session['userid']
     pid = request.args.get('pid')
     print(pid)
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=id)
+    return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=result['id'], likes=len(result['likes']))
 
 @app.route('/create', methods=['POST'])
 def make_post():
     title = request.form['title_give']
     content = request.form['content_give']
-    id = session['id']
+    id = session['userid']
     time = get_current_datetime()
-    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time, 'likes':[]}
     print(title, content, id)
     db.posts.insert_one(information)
     return redirect(url_for('index'))
@@ -120,8 +120,8 @@ def make_post():
 
 @app.route('/create', methods=['GET'])
 def create():
-    name = session['id']
-    return render_template("create.html", id=name)
+    id = session['userid']
+    return render_template("create.html", id=id)
 
 
 # 현재 날짜 구하는 함수
