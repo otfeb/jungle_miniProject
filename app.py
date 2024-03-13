@@ -1,6 +1,7 @@
 from flask import *
 import jwt
 import datetime
+import pytz
 import hashlib
 from pymongo import MongoClient
 import math
@@ -108,7 +109,8 @@ def make_post():
     title = request.form['title_give']
     content = request.form['content_give']
     id = session['userid']
-    information = {'title': title, 'content': content, 'id': id}
+    time = get_current_datetime()
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
     print(title, content, id)
     db.posts.insert_one(information)
     return jsonify({'result':'success'})
@@ -119,6 +121,15 @@ def create():
     id = session['userid']
     return render_template("create.html", id=id)
 
+
+# 현재 날짜 구하는 함수
+def get_current_datetime():
+    current_utc_time = datetime.datetime.utcnow()
+
+    kr_tz = pytz.timezone('Asia/Seoul')
+    time = current_utc_time.replace(tzinfo=pytz.utc).astimezone(kr_tz)
+
+    return time
 
 if __name__ == '__main__':
     app.run('0.0.0.0',port=5011,debug=True)
