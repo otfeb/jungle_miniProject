@@ -11,6 +11,14 @@
       .wrap {
         width: 1200px;
         margin: auto;
+        height: auto;
+        min-height: 100%;
+        padding-bottom: 168px;
+      }
+      .footer{
+        background-color: antiquewhite;
+        position : relative;
+        transform : translateY(-100%);
       }
       
       {% block style %}
@@ -193,8 +201,9 @@
             <div class="field">
               <label class="label">ID</label>
               <div class="control">
-                <input class="input" type="text" id="userId" placeholder="아이디를 입력해주세요">
+                <input class="input" type="text" id="userId" placeholder="아이디를 입력해주세요" maxlength="15">
               </div>
+              <p class="help is-danger">최대 15자로 입력해주세요</p>
             </div>
     
             <div class="field">
