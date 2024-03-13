@@ -92,12 +92,13 @@ def login():
 
 @app.route('/post', methods=['GET'])
 def post():
+    name = session['username']
     pid = request.args.get('pid')
     print(pid)
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html", title=result['title'], id=result['name'], content=result['content'], time=result['regist_date'])
+    return render_template("post.html", title=result['title'], writer=result['name'], content=result['content'], time=result['regist_date'], id=name)
 
 @app.route('/create', methods=['POST'])
 def make_post():
