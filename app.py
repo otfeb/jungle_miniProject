@@ -88,7 +88,6 @@ def login():
     else:
         return jsonify({'result':'fail', 'msg':'아이디/비밀번호가 일치하지 않습니다.'})
 
-
 @app.route('/post', methods=['GET'])
 def post():
     
