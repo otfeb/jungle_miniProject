@@ -100,7 +100,7 @@ def post():
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html")
+    return render_template("post.html", title=result['title'], content=result['content'])
 
 
 @app.route('/create', methods=['POST'])
