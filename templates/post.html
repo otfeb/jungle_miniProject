@@ -52,14 +52,16 @@
 
 {% block script %}
   function getData(pid){
-    $.ajax({
-      type: 'get',
-      url: '/getData'+'?id={{id}}&title={{title}}&content={{content}}&pid='+pid,
-      data:{},
-      success: function(res){
-        location.href = '/getData?id={{id}}&title={{title}}&content={{content}}&pid='+pid;
-      }
-    })
+
+      $.ajax({
+        type: 'get',
+        url: '/getData'+'?id={{id}}&title={{title}}&pid='+pid,
+        data:{},
+        success: function(res){
+          location.href = '/getData?id={{id}}&title={{title}}&pid='+pid;
+        }
+      })
+
   }
 
 function toggleLike() {
