@@ -21,21 +21,25 @@ def index():
     print(page)
     limit = 6
     offset = (page - 1) * limit
-    posts = list(db.posts.find({}).skip(offset).limit(limit))
-    for idx in range(len(posts)):
-        posts[idx]['_id'] = str(posts[idx]['_id'])
+    posts = list(db.posts.find({},{'_id':False}).skip(offset).limit(limit))
     tot_count = list(db.posts.find({},{'_id':False}))
     last_page_num = math.ceil(len(tot_count) / limit)
-
+    print(posts)
+    
     if token_receive is not None:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        user_info = db.users.find_one({'id':payload['id']})
-        id = user_info['id']
-        session["userid"] = str(id)
-        return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'id':payload['id']})
+            id = user_info['id']
+            session["userid"] = str(id)
+            return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
+        except jwt.ExpiredSignatureError:
+            return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num)
     else:
         return render_template("index.html", posts=posts, page=page, zip=zip, last = last_page_num)
-
+    
+    
+    
 
 @app.route('/signUp', methods=['POST'])
 def signUp():
