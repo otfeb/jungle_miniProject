@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import math
 import os
 from bson.objectid import ObjectId
+from jwt.exceptions import ExpiredSignatureError
 
 client = MongoClient('mongodb+srv://sparta:jungle@cluster0.sfuhxqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.dbjungle
@@ -81,7 +82,7 @@ def login():
     if find_user is not None:
         payload = {
             'id': id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
         }
         payload2 = {
             'id': id,
@@ -176,6 +177,11 @@ def update():
  
     db.posts.update_one({'_id':pid}, {'$set':{'title':title, 'content':content}})
     return redirect(url_for('index'))
+
+@app.errorhandler(ExpiredSignatureError)
+def unauthorized(error):
+    return redirect(url_for('index'))
+
 
 # 현재 날짜 구하는 함수
 def get_current_datetime():
