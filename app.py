@@ -5,6 +5,7 @@ import hashlib
 from pymongo import MongoClient
 import math
 import os
+from bson.objectid import ObjectId
 
 client = MongoClient('mongodb+srv://sparta:jungle@cluster0.sfuhxqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client.dbjungle
@@ -21,7 +22,9 @@ def index():
     print(page)
     limit = 6
     offset = (page - 1) * limit
-    posts = list(db.posts.find({},{'_id':False}).skip(offset).limit(limit))
+    posts = list(db.posts.find({}).skip(offset).limit(limit))
+    for post in posts:
+        post['_id'] = str(post['_id'])
     tot_count = list(db.posts.find({},{'_id':False}))
     last_page_num = math.ceil(len(tot_count) / limit)
     print(posts)
@@ -83,7 +86,7 @@ def login():
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-        if type(token)==bytes:
+        if type(token) == bytes:
             token = token.decode('utf-8')
         return jsonify({'result':'success', 'token':token})
     else:
@@ -92,7 +95,12 @@ def login():
 
 @app.route('/post', methods=['GET'])
 def post():
-    return render_template("post.html")
+    pid = request.args.get('pid')
+    print(pid)
+    result = db.posts.find_one({'_id':ObjectId(pid)})
+    print(result)
+
+    return render_template("post.html", title=result['title'], content=result['content'])
 
 
 @app.route('/create', methods=['POST'])
@@ -110,6 +118,7 @@ def make_post():
 def create():
     id = session['userid']
     return render_template("create.html", id=id)
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0',port=5011,debug=True)
