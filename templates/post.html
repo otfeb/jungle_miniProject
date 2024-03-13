@@ -12,6 +12,17 @@
   .card-content {
     padding: 3rem;
   }
+  .liked {
+    background-color: #ff3860; /* 좋아요 상태일 때 배경색 변경 */
+  }
+  .liked .icon {
+      color: white; /* 좋아요 상태일 때 아이콘 색상 변경 */
+  }
+
+  #likeButton {
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }
 {% endblock %}
 
 {% block script %}
@@ -38,10 +49,15 @@ function toggleLike() {
       if (response['result']=='success') {
         console.log("Like toggled successfully");
         const button = document.getElementById('likeButton');
-        if (button.innerText === 'Like') {
-          button.innerText = 'Unlike';
+        const icon = document.getElementById('likeIcon');
+        if (button.classList.contains('liked')) {
+          button.classList.remove('liked');
+          icon.classList.remove('fas');
+          icon.classList.add('far'); // 좋아요 상태가 아닐 때는 빈 따봉 아이콘으로 변경
         } else {
-          button.innerText = 'Like';
+          button.classList.add('liked');
+          icon.classList.remove('far');
+          icon.classList.add('fas'); // 좋아요 상태일 때는 채워진 따봉 아이콘으로 변경
         }
       }
     }
@@ -63,8 +79,13 @@ function toggleLike() {
         </div>
         <p class="is-size-6 has-text-centered">{{time}}</p>
       </div>
+      <button id="likeButton" class="button" onclick="toggleLike()">
+        <span class="icon">
+            <i id="likeIcon" class="far fa-thumbs-up"></i> <!-- 따봉 아이콘 -->
+        </span>
+        <span id="likeText">Like</span>
+      </button>
     </div>
-    <button id="likeButton" onclick="toggleLike()">Like</button>
     {% if id == writer_id %}
     <button class="button is-warning" onclick="getData()">수정</button>
     <button onclick="delete_post('{{ pid }}')">삭제</button>

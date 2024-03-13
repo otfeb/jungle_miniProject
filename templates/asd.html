@@ -3,41 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toggle Like</title>
+    <title>Like Button with Bulma</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <style>
+    </style>
 </head>
 <body>
-    <button id="likeButton" onclick="toggleLike()">Like</button>
 
     <script>
         function toggleLike() {
-            const itemId = 'your_item_id';  // 좋아요를 토글할 항목의 ID
-            const userId = 'your_user_id';  // 현재 사용자의 ID
+            const button = document.getElementById('likeButton');
+            const icon = document.getElementById('likeIcon');
 
-            fetch('/toggleLike', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ itemId, userId })
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Like toggled successfully');
-                    // 좋아요 상태에 따라 버튼 텍스트 변경
-                    const button = document.getElementById('likeButton');
-                    if (button.innerText === 'Like') {
-                        button.innerText = 'Unlike';
-                    } else {
-                        button.innerText = 'Like';
-                    }
-                } else {
-                    console.error('Failed to toggle like');
-                }
-            })
-            .catch(error => {
-                console.error('Error toggling like:', error);
-            });
+            // 좋아요 상태에 따라 스타일 변경
+            if (button.classList.contains('liked')) {
+                button.classList.remove('liked');
+                icon.classList.remove('fas');
+                icon.classList.add('far'); // 좋아요 상태가 아닐 때는 빈 따봉 아이콘으로 변경
+            } else {
+                button.classList.add('liked');
+                icon.classList.remove('far');
+                icon.classList.add('fas'); // 좋아요 상태일 때는 채워진 따봉 아이콘으로 변경
+            }
         }
     </script>
 </body>
 </html>
+
+
