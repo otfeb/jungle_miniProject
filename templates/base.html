@@ -39,27 +39,52 @@
           $("#login_modal").attr("class", "modal");
         }
   
+      //   function idCheck(){
+      //     userId = $("#userId").val();
+
+      //     $.ajax({
+      //         type: 'post',
+      //         url: '/idCheck',
+      //         data: {'userId':userId},
+      //         success:function(res){
+      //           if(res == '1'){
+      //             alert('회원가입에 성공하였습니다!');
+      //             return true;
+      //           }
+      //           else{
+      //             $("#chkSign").html("동일한 아이디가 존재합니다.");
+      //             $("#chkSign").css("color", "red");
+      //             $("#userId").focus();
+      //             return false;
+      //           }
+      //         }
+      //     });
+      // }
+
         function idCheck(){
-          userId = $("#userId").val();
+          var userId = $("#userId").val()
+          var userPw = $("#userPw").val()
+          var userName = $("#userName").val()
 
           $.ajax({
-              type: 'post',
-              url: '/idCheck',
-              data: {'userId':userId},
-              success:function(res){
-                if(res == '1'){
-                  alert('회원가입에 성공하였습니다!');
-                  return true;
-                }
-                else{
-                  $("#chkSign").html("동일한 아이디가 존재합니다.");
-                  $("#chkSign").css("color", "red");
-                  $("#userId").focus();
-                  return false;
-                }
+            type: 'post',
+            url: '/signUp',
+            data: {'userId':userId, 'userPw':userPw, 'userName':userName},
+            success: function(res){
+              if(res['result'] == 'success'){
+                alert('회원가입이 완료되었습니다.');
+                location.href = '/'
               }
-          });
-      }
+              else{
+                alert(res['msg']);
+                $("#userId").val('')
+                $("#userPw").val('')
+                $("#userName").val('')
+                $("#userId").focus()
+              }
+            }
+          })
+        }
   
         function login_check(){
           var id = $("#user_login_id").val();
@@ -171,7 +196,7 @@
     <div class="modal" id="signUp_modal">
         <div class="modal-background"></div>
         <div class="modal-card">
-          <form action="/signUp" method="post" onsubmit="return idCheck()">
+          <!-- <form action="/signUp" method="post" onsubmit="return idCheck()"> -->
           <header class="modal-card-head">
             <p class="modal-card-title"><b>회원가입</b></p>
             <button type="button" class="delete" aria-label="close" onclick="close_signUp()"></button>
@@ -181,31 +206,30 @@
             <div class="field">
               <label class="label">ID</label>
               <div class="control">
-                <input class="input" type="text" name="user_id" id="userId" placeholder="아이디를 입력해주세요">
+                <input class="input" type="text" id="userId" placeholder="아이디를 입력해주세요">
               </div>
-              <p class="help" id="chkSign"></p>
             </div>
     
             <div class="field">
               <label class="label">PW</label>
               <div class="control">
-                <input class="input" type="text" name="user_pw" id="userPw" placeholder="비밀번호를 입력해주세요">
+                <input class="input" type="text" id="userPw" placeholder="비밀번호를 입력해주세요">
               </div>
             </div>
     
             <div class="field">
               <label class="label">NAME</label>
               <div class="control">
-                <input class="input" type="text" name="user_name" id="userName" placeholder="이름을 입력해주세요">
+                <input class="input" type="text" id="userName" placeholder="이름을 입력해주세요">
               </div>
             </div>
     
           </section>
           <footer class="modal-card-foot">
-            <button type="submit" class="button is-success">Sign up</button>
+            <button type="button" class="button is-success" onclick="idCheck()">Sign up</button>
             <button type="button" class="button" onclick="close_signUp()">Cancel</button>
           </footer>
-        </form>
+        <!-- </form> -->
         </div>
       </div>
   
