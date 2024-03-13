@@ -163,21 +163,20 @@ def get_current_datetime():
 
 @app.route('/getData', methods=['GET'])
 def getData():
-    token_receive = request.cookies.get('mytoken')
 
     title = request.args.get('title')
     content = request.args.get('content')
-    idx = request.args.get('idx')
-    return render_template("update.html", title = title, content = content, idx = idx)
+    id = request.args.get('id')
+    pid = request.args.get('pid')
+    return render_template("update.html", title = title, content = content, id = id, pid = pid)
 
 @app.route('/update', methods=['POST'])
 def update():
-    title = request.form['title']
-    content = request.form['content']
-    id = request.form['id']
-    time = get_current_datetime()
-    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
-    db.posts.insert_one(information)
+    pid = ObjectId(request.form['pid'])
+    title = request.form['title_give']
+    content = request.form['content_give']
+ 
+    db.posts.update_one({'_id':pid}, {'$set':{'title':title, 'content':content}})
     return redirect(url_for('index'))
 
 if __name__ == '__main__':

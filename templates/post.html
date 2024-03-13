@@ -26,14 +26,13 @@
 {% endblock %}
 
 {% block script %}
-  function getData(){
-    var pid = '{{pid}}';
+  function getData(pid){
     $.ajax({
       type: 'get',
       url: '/getData'+'?id={{id}}&title={{title}}&content={{content}}&pid='+pid,
       data:{},
       success: function(res){
-
+        location.href = '/getData?id={{id}}&title={{title}}&content={{content}}&pid='+pid;
       }
     })
   }
@@ -87,7 +86,7 @@ function toggleLike() {
       </button>
     </div>
     {% if id == writer_id %}
-    <button class="button is-warning" onclick="getData()">수정</button>
+    <button class="button is-warning" onclick="getData('{{ pid }}')">수정</button>
     <button onclick="delete_post('{{ pid }}')">삭제</button>
     {% endif %}
   </div>
