@@ -15,6 +15,8 @@
       {% endblock %}
     </style>
     <script>
+        let id = '{{ id }}';
+
         function singUp(){
           $("#signUp_modal").attr("class", "modal is-active");
         }
@@ -84,7 +86,9 @@
           alert('로그아웃 되었습니다.');
           location.href = '/'
         }
-  
+
+        {% block script %}
+        {% endblock %}
     </script>
   </head>
   <body>

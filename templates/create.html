@@ -2,32 +2,33 @@
 
 {% block content %}
 <section class="section">
-    <div class="container">
-      <h1 class="title">게시글 작성</h1>
-      <form>
-        <div class="field">
-          <label class="label">제목</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="제목을 입력하세요">
-          </div>
+  <div class="container">
+    <h1 class="title">게시글 작성</h1>
+    <form>
+      <div class="field">
+        <label class="label">제목</label>
+        <div class="control">
+          <input id="post-title" class="input" type="text" placeholder="제목을 입력하세요">
         </div>
-  
-        <div class="field">
-          <label class="label">내용</label>
-          <div class="control">
-            <textarea class="textarea" placeholder="내용을 입력하세요"></textarea>
-          </div>
+      </div>
+
+      <div class="field">
+        <label class="label">내용</label>
+        <div class="control">
+          <textarea id="post-content" class="textarea" placeholder="내용을 입력하세요"></textarea>
         </div>
-  
-        <div class="field is-grouped">
-          <div class="control">
-            <button class="button is-primary">작성</button>
-          </div>
-          <div class="control">
-            <button class="button is-light">취소</button>
-          </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-primary" onclick="postInfo()">작성</button>
         </div>
-      </form>
-    </div>
-  </section>
-{% endblock  %}
+        <div class="control">
+          <button class="button is-light">취소</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
