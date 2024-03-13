@@ -19,7 +19,11 @@
 #btn-container {
   margin-bottom: 10px;
   display: flex;
-}  
+}
+
+.name {
+  margin-bottom: 15px;
+}
 
 {% endblock %}
 
@@ -34,7 +38,10 @@
   <div class="tile is-vertical is-4" id="post">
     <div class="tile is-parent">
       <article class="tile is-child box">
-        <p class="title">{{ posts[idx].title }}</p>
+        <p class="title">
+          <a href="/post?pid={{posts[idx]._id}}">{{ posts[idx].title }}</a>    
+        </p>
+        <p class="name">{{ posts[idx].name }}</p>
         <p class="subtitle">{{ posts[idx].content }}</p>
       </article>
     </div>
@@ -46,7 +53,10 @@
 {% for idx in range(3, posts|length) %}
   <div class="tile is-parent" id="post">
     <article class="tile is-child box">
-      <p class="title">{{ posts[idx].title }}</p>
+      <p class="title">
+        <a href="/post?pid={{posts[idx].name}}">{{ posts[idx].title }}</a>
+      </p>
+      <p class="name">{{ posts[idx].name }}</p>
       <p class="subtitle">{{ posts[idx].content }}</p>
     </article>
   </div>
