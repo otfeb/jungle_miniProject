@@ -108,6 +108,20 @@
           location.href = '/'
         }
 
+        function delete_post(pid) {
+          $.ajax({
+                    type: 'POST',
+                    url: '/delete',
+                    data: {'pid_give' : pid},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            alert("삭제되었습니다.");
+                            location.href = '/';
+                        }
+                    }
+                });
+        }
+
         {% block script %}
         {% endblock %}
     </script>
