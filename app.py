@@ -92,12 +92,19 @@ def login():
 
 @app.route('/post', methods=['GET'])
 def post():
+    
+    jwt_token = request.headers.get('Authorization')
+
+    # JWT 토큰이 있는지 확인
+    if jwt_token:
+        print("JWT 토큰이 있습니다:", jwt_token)
+        id = session['userid']
     pid = request.args.get('pid')
     print(pid)
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html", title=result['title'], id=result['id'], content=result['content'], time=result['regist_date'], likes=len(result['likes']))
+    return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=result['id'], likes=len(result['likes']))
 
 @app.route('/create', methods=['POST'])
 def make_post():
