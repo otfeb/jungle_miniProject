@@ -102,7 +102,7 @@
             data: {'id':id, 'pw':pw},
             success: function(res){
               if(res['result'] == 'success'){
-                $.cookie('mytoken', res['token']);
+                $.cookie('access_token', res['access_token']);
                 $.cookie('refresh_token', res['refresh_token'])
                 //alert('로그인 완료!');
                 location.href = '/'
@@ -115,7 +115,7 @@
         }
   
         function logout(){
-          $.removeCookie('mytoken');
+          $.removeCookie('access_token');
           alert('로그아웃 되었습니다.');
           location.href = '/'
         }
@@ -146,7 +146,7 @@
     {% if msg %}
       <script>
         alert("{{msg}}");
-        $.removeCookie('mytoken');
+        $.removeCookie('access_token');
       </script>
     {% endif %}
 
