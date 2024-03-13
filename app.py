@@ -186,7 +186,6 @@ def get_best_post():
     group = db.likes.aggregate([ 
         {"$group":{"_id":"$post_id", "count":{"$sum":1}}}
         ])
-    print('group=', list(group))
     maxlike = ('',-1)
     for g in list(group):
         post1 = db.posts.find_one({"_id":ObjectId(g['_id'])})
