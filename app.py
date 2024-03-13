@@ -36,8 +36,8 @@ def index():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'id':payload['id']})
-            name = user_info['name']
-            session["username"] = str(name)
+            name = user_info['id']
+            session["id"] = str(id)
             return render_template("index.html", id = user_info['id'], posts=posts, page=page, zip=zip, last = last_page_num)
         except jwt.ExpiredSignatureError:
             return render_template('index.html', msg = '로그인 시간이 만료되었습니다.', posts=posts, page=page, zip=zip, last = last_page_num)
@@ -92,29 +92,35 @@ def login():
 
 @app.route('/post', methods=['GET'])
 def post():
-    name = session['username']
+    
+    jwt_token = request.headers.get('Authorization')
+
+    # JWT 토큰이 있는지 확인
+    if jwt_token:
+        print("JWT 토큰이 있습니다:", jwt_token)
+        name = session['id']
     pid = request.args.get('pid')
     print(pid)
     result = db.posts.find_one({'_id':ObjectId(pid)})
     print(result)
 
-    return render_template("post.html", title=result['title'], writer=result['name'], content=result['content'], time=result['regist_date'], id=name)
+    return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=id)
 
 @app.route('/create', methods=['POST'])
 def make_post():
     title = request.form['title_give']
     content = request.form['content_give']
-    name = session['username']
+    id = session['id']
     time = get_current_datetime()
-    information = {'title': title, 'content': content, 'name': name, 'regist_date': time}
-    print(title, content, name)
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
+    print(title, content, id)
     db.posts.insert_one(information)
     return redirect(url_for('index'))
 
 
 @app.route('/create', methods=['GET'])
 def create():
-    name = session['username']
+    name = session['id']
     return render_template("create.html", id=name)
 
 
