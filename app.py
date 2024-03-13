@@ -20,7 +20,7 @@ print('jwt version : ', jwt.__version__)
 
 @app.route('/', methods=['GET'])
 def index():
-    token_receive = request.cookies.get('mytoken')
+    token_receive = request.cookies.get('access_token')
 
     page = int(request.args.get('page', 1))
     limit = 6
@@ -80,20 +80,27 @@ def login():
     find_user = db.users.find_one({'id':id, 'pw':pw_hash})
 
     if find_user is not None:
-        payload = {
+        access_payload = {
             'id': id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3)
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-        if type(token) == bytes:
-            token = token.decode('utf-8')
-        return jsonify({'result':'success', 'token':token})
+        refresh_payload = {
+            'id': id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1)
+        }
+
+        access_token = jwt.encode(access_payload, SECRET_KEY, algorithm='HS256')
+        refresh_token = jwt.encode(refresh_payload, SECRET_KEY, algorithm='HS256')
+
+        if type(access_token) == bytes:
+            access_token = access_token.decode('utf-8')
+        return jsonify({'result':'success', 'access_token':access_token, 'refresh_token': refresh_token})
     else:
         return jsonify({'result':'fail', 'msg':'아이디/비밀번호가 일치하지 않습니다.'})
 
 @app.route('/post', methods=['GET'])
 def post():
-    token_receive = request.cookies.get('mytoken')
+    token_receive = request.cookies.get('access_token')
 
     pid = request.args.get('pid')
     result = db.posts.find_one({'_id':ObjectId(pid)})
@@ -171,10 +178,37 @@ def update():
     db.posts.update_one({'_id':pid}, {'$set':{'title':title, 'content':content}})
     return redirect(url_for('index'))
 
+
 @app.errorhandler(ExpiredSignatureError)
 def unauthorized(error):
-    return redirect(url_for('index'))
+    refresh_token = request.cookies.get('refresh_token')
+    user_id = verify_refresh_token(refresh_token)
+    if user_id is not None:
+        access_token = generate_access_token(user_id)
+        return render_template()
+    else:
+        return redirect(url_for('index'))
 
+
+def verify_refresh_token(refresh_token):
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        return user_id
+    except jwt.ExpiredSignatureError:
+        # 리프레시 토큰이 만료된 경우
+        return None
+    except jwt.InvalidTokenError:
+        # 리프레시 토큰이 유효하지 않은 경우
+        return None
+
+def generate_access_token(user_id):
+    payload = {
+        'id': user_id,
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3)
+    }
+    access_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    return access_token
 
 # 현재 날짜 구하는 함수
 def get_current_datetime():
