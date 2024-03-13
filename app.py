@@ -103,11 +103,11 @@ def post():
         id = user_info['id']
         session["id"] = str(id)
         try:
-            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'])
+            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], id=user_info['id'], pid=pid)
         except jwt.ExpiredSignatureError:
-            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], msg="로그인 시간이 만료되었습니다.")
+            return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid, msg="로그인 시간이 만료되었습니다.")
     else:
-        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'])
+        return render_template("post.html", title=result['title'], writer_id=result['id'], content=result['content'], time=result['regist_date'], pid=pid)
 
 
 @app.route('/create', methods=['POST'])
@@ -116,7 +116,7 @@ def make_post():
     content = request.form['content_give']
     id = session['id']
     time = get_current_datetime()
-    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time, 'likes': []}
     print(title, content, id)
     db.posts.insert_one(information)
     return redirect(url_for('index'))
@@ -126,6 +126,23 @@ def make_post():
 def create():
     name = session['id']
     return render_template("create.html", id=name)
+
+
+@app.route('/toggleLike', methods=['POST'])
+def toggle_like():
+    userId = request.form['userId']
+    postId = request.form['pid']
+
+    post = db.posts.find_one({'_id':ObjectId(postId)})
+    postList = post['likes']
+    # 좋아요 상태 확인하고 토글
+    if userId in postList:
+        postList.remove(userId)
+    else: 
+        postList.append(userId)
+    db.posts.update_one({'_id':ObjectId(postId)},{'$set':{'likes':postList}})
+    
+    return jsonify({'result': 'success'})
 
 
 # 현재 날짜 구하는 함수
