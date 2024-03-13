@@ -161,5 +161,24 @@ def get_current_datetime():
 
     return time
 
+@app.route('/getData', methods=['GET'])
+def getData():
+    token_receive = request.cookies.get('mytoken')
+
+    title = request.args.get('title')
+    content = request.args.get('content')
+    idx = request.args.get('idx')
+    return render_template("update.html", title = title, content = content, idx = idx)
+
+@app.route('/update', methods=['POST'])
+def update():
+    title = request.form['title']
+    content = request.form['content']
+    id = request.form['id']
+    time = get_current_datetime()
+    information = {'title': title, 'content': content, 'id': id, 'regist_date': time}
+    db.posts.insert_one(information)
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':
     app.run('0.0.0.0',port=5011,debug=True)
