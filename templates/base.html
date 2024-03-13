@@ -25,7 +25,7 @@
         function close_signUp(){
           $("#userId").val("");
           $("#userPw").val("");
-          $("#userName").val("");
+          $("#userPw2").val("");
           $("#signUp_modal").attr("class", "modal");
         }
   
@@ -42,7 +42,15 @@
         function idCheck(){
           var userId = $("#userId").val();
           var userPw = $("#userPw").val();
-          var userName = $("#userName").val();
+          var userPw2 = $("#userPw2").val();
+
+          if(userPw != userPw2){
+            alert('비밀번호를 확인해주세요');
+            $("#userId").val('');
+            $("#userPw").val('');
+            $("#userPw2").val('');
+            return
+          }
 
           let reg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,12}$/;
 
@@ -56,7 +64,7 @@
           $.ajax({
             type: 'post',
             url: '/signUp',
-            data: {'userId':userId, 'userPw':userPw, 'userName':userName},
+            data: {'userId':userId, 'userPw':userPw},
             success: function(res){
               if(res['result'] == 'success'){
                 alert('회원가입이 완료되었습니다.');
@@ -66,7 +74,7 @@
                 alert(res['msg']);
                 $("#userId").val('');
                 $("#userPw").val('');
-                $("#userName").val('');
+                $("#userPw2").val('');
                 $("#userId").focus();
               }
             }
@@ -183,7 +191,6 @@
     <div class="modal" id="signUp_modal">
         <div class="modal-background"></div>
         <div class="modal-card">
-          <!-- <form action="/signUp" method="post" onsubmit="return idCheck()"> -->
           <header class="modal-card-head">
             <p class="modal-card-title"><b>회원가입</b></p>
             <button type="button" class="delete" aria-label="close" onclick="close_signUp()"></button>
@@ -198,7 +205,7 @@
             </div>
     
             <div class="field">
-              <label class="label">PW</label>
+              <label class="label">PASSWORD</label>
               <div class="control">
                 <input class="input" type="password" id="userPw" placeholder="비밀번호를 입력해주세요">
               </div>
@@ -206,9 +213,9 @@
             </div>
     
             <div class="field">
-              <label class="label">NAME</label>
+              <label class="label">CONFIRM PASSWORD</label>
               <div class="control">
-                <input class="input" type="text" id="userName" placeholder="이름을 입력해주세요">
+                <input class="input" type="password" id="userPw2" placeholder="비밀번호 확인">
               </div>
             </div>
     
@@ -217,7 +224,6 @@
             <button type="button" class="button is-success" onclick="idCheck()">Sign up</button>
             <button type="button" class="button" onclick="close_signUp()">Cancel</button>
           </footer>
-        <!-- </form> -->
         </div>
       </div>
   
